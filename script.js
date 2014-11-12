@@ -133,6 +133,10 @@ function Banner(element, options) {
     this.maxSlides = list.length;
     this.images = [];
     this.currentSlide = 0;
+    this.width = this.element.clientWidth;
+    this.height = this.element.clientHeight;
+    this.marginTop = getComputedStyle ? parseInt(getComputedStyle(this.element).marginTop) : 0;
+    this.marginLeft = getComputedStyle ? parseInt(getComputedStyle(this.element).marginLeft) : 0;
     this.isWaiting = true;
 
     this.drawStars();
@@ -252,14 +256,6 @@ Banner.prototype.loadImage = function (index, src) {
 };
 
 
-/* 3. Transitions and Movement
- ------------------------------------------------------------------------------------------------- */
-
-/**
- * Begins the Gallery Transition and tracks the current slide
- * Also manages loading - if the interval encounters a slide
- * that has not loaded, the transition pauses.
- */
 Banner.prototype.play = function () {
     //If the image is not loaded, turn on waiting mode
     if (!this.images[this.currentSlide]) {
@@ -305,8 +301,8 @@ Banner.prototype.chooseCorner = function () {
         endScale = animations.endScale,
         start = animations.startPosition,
         end = animations.endPosition,
-        w = this.element.clientWidth - 180,
-        h = this.element.clientHeight,
+        w = this.width - this.marginLeft,
+        h = this.height - this.marginTop,
         imw = image.width,
         imh = image.height;
 
@@ -359,9 +355,7 @@ Banner.prototype.animateCSS3D = function () {
 /**
  *  The regular JQuery animation function. Sets the currentSlide initial position to
  *  the value from chooseCorner before triggering the animation. It starts the image moving to
- *  the new position, starts the fade on the wrapper, and delays the fade out animation. Adding
- *  fadeSpeed to duration gave me a nice crossfade so the image continues to move as it fades out
- *  rather than just stopping.
+ *  the new position, starts the fade on the wrapper, and delays the fade out animation.
  */
 
 Banner.prototype.animateJQuery = function () {
@@ -379,13 +373,13 @@ Banner.prototype.animateJQuery = function () {
     $image.css({
         left: position.startX,
         top: position.startY,
-        width: sw * startScale,
-        height: sh * startScale
+        width: sw,// * startScale,
+        height: sh// * startScale
     });
     
     // Bring to front
     image.className = 'visible';
-    
+    /*
     // fire animation
     $image.animate({
         left: position.endX,
@@ -396,7 +390,7 @@ Banner.prototype.animateJQuery = function () {
         duration: animations.transitionTime, 
         queue: false 
     });
-
+    */
     $image.animate({
         opacity: 1
     },  { 
