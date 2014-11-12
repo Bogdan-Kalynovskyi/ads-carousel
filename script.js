@@ -168,19 +168,31 @@ Banner.prototype.$ = function (selector) {
 
 
 Banner.prototype.drawStars = function () {
-    var rate = parseInt(this.options.rate),
-        rateSub = this.options.rate % 1,
-        stars = this.$('.stars').children,
-        star;
+    var html = '';
     
-    for (var i = rate; i <= 5; i++) {
-        star = stars[i];
-        star.className = 'star star-on';
-        if (i === rate) {
-            star.style.width = rateSub + 'em';
-            star.style.marginRight = (1 - rateSub) + 'em';
+    for (var r = 0, ratesCount = this.options.rates.length; r < ratesCount; r++) {
+        var rate = this.options.rates[r],
+            rateInt = Math.floor(rate),
+            rateSub = rate - rateInt,
+            starOn = '',
+            style = '';
+
+        html += '<div class=stars>';
+        for (var i = 0; i < 6; i++) {
+            if (i >= rateInt) {
+                starOn = ' star-on';
+            }
+            if (i === rateInt) {
+                style = ' style="width: ' + rateSub + 'em; margin-right: ' + (1 - rateSub) + 'em"';
+            }
+            html += '<div class="star' + starOn + '"' + style + '></div>';
         }
+        html += '</div>';
     }
+    
+    var fragment = document.createDocumentFragment();
+    fragment.innerHTML = html;
+    this.element.appendChild(fragment);
 };
 
 
