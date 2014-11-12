@@ -190,7 +190,7 @@ function Banner(element, options) {
   
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < this.maxSlides; i++) {
-        fragment.appendChild(this.loadImage(i, list[i].src));
+        fragment.appendChild(this.loadImage(i, list[i].imageSrc));
     }
     this.carousel.appendChild(fragment);
 
@@ -242,7 +242,7 @@ Banner.prototype.drawStuff = function () {
             '</div>' +
         '</div>' +
         '<p class=action>' +
-            '<a href="' + this.options.actionLink + '" target=_blank>' + this.options.actionName + '</a>' +
+            '<a href="' + this.options.actionLink + '" target=_blank>' + this.options.actionText + '</a>' +
         '</p>' +
         '<div class=carousel></div>' +
         '<div class=loader></div>' +

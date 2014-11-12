@@ -122,12 +122,9 @@ var utils = {
 };
 
 
-/*  1. Initialization
+/*  Banner creator
  ------------------------------------------------------------------------------------------------- */
-/**
- * Init
- * Initial setup - dermines width, height, and adds the loading icon.
- */
+
 function Banner(element, options) {
     this.element = element;
     this.options = options;
@@ -144,7 +141,7 @@ function Banner(element, options) {
         fragment = document.createDocumentFragment();
     
     for (var i = 0; i < this.maxSlides; i++) {
-        fragment.appendChild(this.loadImage(i, list[i].src));
+        fragment.appendChild(this.loadImage(i, list[i].imageSrc));
     }
     carousel.appendChild(fragment);
 
