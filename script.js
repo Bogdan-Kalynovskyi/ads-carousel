@@ -126,26 +126,31 @@ var utils = {
  ------------------------------------------------------------------------------------------------- */
 
 function Banner(element, options) {
-    this.element = element;
-    this.options = options;
-    
-    var list = this.options.slides;
-    this.maxSlides = list.length;
-    this.images = [];
-    this.currentSlide = 0;
-    this.width = this.element.clientWidth;
-    this.height = this.element.clientHeight;
-    this.marginTop = getComputedStyle ? parseInt(getComputedStyle(this.element).marginTop) : 0;
-    this.marginLeft = getComputedStyle ? parseInt(getComputedStyle(this.element).marginLeft) : 0;
-    this.isWaiting = true;
-
-    this.drawStars();
-  
     var carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
     
+    this.element = element;
+    this.options = options;
+    this.images = this.options.images;
+    this.maxSlides = this.images.length;
+    this.currentSlide = 0;
+    this.width = this.element.clientWidth;
+    this.height = this.element.clientHeight;
+    if (window.getComputedStyle) {
+        var computed = window.getComputedStyle(carousel);
+        this.marginTop = parseInt(computed.marginTop);
+        this.marginLeft = parseInt(computed.marginLeft);
+    }
+    else {
+        this.marginTop = 0;
+        this.marginLeft = 0;
+    }
+    this.isLoading = true;
+
+    this.drawStars();
+  
     for (var i = 0; i < this.maxSlides; i++) {
-        fragment.appendChild(this.loadImage(i, list[i].imageSrc));
+        fragment.appendChild(this.loadImage(i));
     }
     carousel.appendChild(fragment);
 
@@ -177,7 +182,7 @@ Banner.prototype.drawStars = function () {
     for (var r = 0, ratesCount = this.options.rates.length; r < ratesCount; r++) {
         var rate = this.options.rates[r],
             rateInt = Math.floor(rate),
-            rateSub = rate - rateInt,
+            rateSub = rate - rateInt + .1//hotfix,
             starOn = '',
             style = '';
 
@@ -203,49 +208,47 @@ Banner.prototype.drawStars = function () {
 Banner.prototype.showLoader = function () {
     this.$('.loader').style.display = '';
     this.$('.status').innerHTML = 'Loading...';
-    this.isWaiting = true;
+    this.isLoading = true;
 };
 
 
 Banner.prototype.hideLoader = function () {
     this.$('.loader').style.display = 'none';
     this.$('.status').innerHTML = '';
-    this.isWaiting = false;
+    this.isLoading = false;
 };
 
 
-Banner.prototype.loadImage = function (index, src) {
+Banner.prototype.loadImage = function (index) {
     var that = this,
         img = new Image();
 
     img.onload = function () {
-        that.images[index] = {
-            element: this,
-            width: this.width,
-            height: this.height
-        };
+        var slide = that.images[index];
+        slide.element = this;
+        slide.width = this.width;
+        slide.height = this.height;
 
-        if (that.isWaiting && (that.supportsCSS3 || that.jQueryLoaded)) {
+        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
             that.play();
         }
     };
     
     img.onerror = function() {
-        that.options.slides.splice(index,  1);
         that.images.splice(index,  1);
-        that.maxSlides = that.options.slides.length;
+        that.maxSlides = that.images.length;
         if (that.currentSlide === that.maxSlides) {
             that.currentSlide = 0;
         }
         
-        if (that.isWaiting && (that.supportsCSS3 || that.jQueryLoaded)) {
+        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
             that.play();
         }
-        throw "could not load image " + src; 
+        throw "could not load image " + index; 
     };
 
-    img.src = src;
-    img.alt = 'image' + index;
+    img.src = this.images[index].imageSrc;
+    img.alt = 'image ' + index;
     img.className = 'hidden';
 
     if (index !== 0) {
@@ -258,7 +261,7 @@ Banner.prototype.loadImage = function (index, src) {
 
 Banner.prototype.play = function () {
     //If the image is not loaded, turn on waiting mode
-    if (!this.images[this.currentSlide]) {
+    if (!this.images[this.currentSlide].element) {
         this.wait();
         return;
     }
@@ -295,22 +298,20 @@ Banner.prototype.wait = function () {
  */
 
 Banner.prototype.chooseCorner = function () {
-    var animations = this.options.slides[this.currentSlide].animations,
-        image = this.images[this.currentSlide].element,
+    var slide = this.images[this.currentSlide],
+        animations = slide.animations,
         startScale = animations.startScale,
         endScale = animations.endScale,
-        start = animations.startPosition,
-        end = animations.endPosition,
         w = this.width - this.marginLeft,
         h = this.height - this.marginTop,
-        imw = image.width,
-        imh = image.height;
+        imageW = slide.width,
+        imageH = slide.height;
 
     return {
-        startX: start.x * (w / startScale - imw),
-        startY: start.y * (h / startScale - imh),
-        endX: end.x * (w / endScale - imw),
-        endY: end.y * (h / endScale - imh)
+        startX: animations.startX * (w / startScale - imageW),
+        startY: animations.startY * (h / startScale - imageH),
+        endX: animations.endX * (w / endScale - imageW),
+        endY: animations.endY * (h / endScale - imageH)
     };
 };
 
@@ -320,13 +321,12 @@ Banner.prototype.chooseCorner = function () {
  */
 
 Banner.prototype.animateCSS3D = function () {
-    var that = this,
-        currentSlide = this.currentSlide,
-        animations = this.options.slides[currentSlide].animations,
-        image = this.images[currentSlide].element,
+    var slide = this.images[this.currentSlide],
+        animation = slide.animations,
+        image = slide.element,
         fadeSpeed = this.options.fadeSpeed,
-        startScale = animations.startScale,
-        endScale = animations.endScale,
+        startScale = animation.startScale,
+        endScale = animation.endScale,
         position = this.chooseCorner(),
         transformJsStyle = this.transform.jsStyle,
         transformCssStyle = this.transform.cssStyle,
@@ -339,7 +339,7 @@ Banner.prototype.animateCSS3D = function () {
     image.className = 'visible';
     
     // Fire transition
-    image.style[transitionJsStyle] = transformCssStyle + ' ' + (animations.transitionTime + fadeSpeed) + 'ms ' + that.options.ease3d + ', ' +
+    image.style[transitionJsStyle] = transformCssStyle + ' ' + (animation.duration + fadeSpeed) + 'ms ' + this.options.ease3d + ', ' +
                                      'opacity ' + fadeSpeed + 'ms';
 
     // fire transition in separate repaint frame
@@ -348,7 +348,7 @@ Banner.prototype.animateCSS3D = function () {
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';   
     }, 0);
 
-    this.moveEnd(currentSlide);
+    this.moveEnd(slide);
 };
 
 
@@ -359,13 +359,13 @@ Banner.prototype.animateCSS3D = function () {
  */
 
 Banner.prototype.animateJQuery = function () {
-    var currentSlide = this.currentSlide,
-        animations = this.options.slides[currentSlide].animations,
-        image = this.images[currentSlide].element,
-        startScale = animations.startScale,
-        endScale = animations.endScale,
-        sw = image.width,
-        sh = image.height,
+    var slide = this.images[this.currentSlide],
+        animation = slide.animations,
+        image = slide.element,
+        startScale = animation.startScale,
+        endScale = animation.endScale,
+        imageW = slide.width,
+        imageH = slide.height,
         position = this.chooseCorner(),
         $image = $(image);
 
@@ -373,8 +373,8 @@ Banner.prototype.animateJQuery = function () {
     $image.css({
         left: position.startX,
         top: position.startY,
-        width: sw,// * startScale,
-        height: sh// * startScale
+        width: imageW,// * startScale,
+        height: imageH// * startScale
     });
     
     // Bring to front
@@ -384,10 +384,10 @@ Banner.prototype.animateJQuery = function () {
     $image.animate({
         left: position.endX,
         top: position.endY,
-        width: sw * endScale,
-        height: sh * endScale
+        width: imageW * endScale,
+        height: imageH * endScale
     },  { 
-        duration: animations.transitionTime, 
+        duration: animation.duration + this.options.fadeSpeed, 
         queue: false 
     });
     */
@@ -398,16 +398,18 @@ Banner.prototype.animateJQuery = function () {
         queue: false 
     });
 
-    this.moveEnd(currentSlide);
+    this.moveEnd(slide);
 };
 
 
-Banner.prototype.moveEnd = function (index) {
+Banner.prototype.moveEnd = function (slide) {
     var that = this;
     setTimeout(function () {
-        that.options.onSlideComplete();
+        if (that.options.onSlideComplete) {
+            that.options.onSlideComplete();
+        }
         setTimeout(function () {
-            var image = that.images[index].element;
+            var image = slide.element;
             image.className = 'hidden';
             if (!that.supportsCSS3) {
                 $(image).stop();

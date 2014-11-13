@@ -179,7 +179,7 @@ function Banner(element, options) {
     this.currentSlide = 0;
     this.width = this.element.clientWidth;
     this.height = this.element.clientHeight;
-    this.isWaiting = true;
+    this.isLoading = true;
     
     this.drawStuff();
     this.drawStars();
@@ -270,14 +270,14 @@ Banner.prototype.drawStars = function () {
 
 
 Banner.prototype.showLoader = function () {
-    this.isWaiting = true;
+    this.isLoading = true;
     this.loader.style.display = '';
     this.status.innerHTML = 'Loading...';
 };
 
 
 Banner.prototype.hideLoader = function () {
-    this.isWaiting = false;
+    this.isLoading = false;
     this.loader.style.display = 'none';
     this.status.innerHTML = '';
 };
@@ -310,7 +310,7 @@ Banner.prototype.loadImage = function (index, src) {
             that.options.onLoadingComplete();
         }
 
-        if (that.isWaiting && (that.supportsCSS3 || that.jQueryLoaded)) {
+        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
             that.play();
         }
     };
@@ -405,11 +405,11 @@ Banner.prototype.chooseCorner = function () {
 Banner.prototype.animateCSS3D = function () {
     var that = this,
         currentSlide = this.currentSlide,
-        animations = this.options.images[currentSlide].animations,
+        animation = this.options.images[currentSlide].animations,
         image = this.images[currentSlide].element,
         fadeSpeed = this.options.fadeSpeed,
-        startScale = animations.startScale,
-        endScale = animations.endScale,
+        startScale = animation.startScale,
+        endScale = animation.endScale,
         position = this.chooseCorner(),
         transformJsStyle = this.transform.jsStyle,
         transformCssStyle = this.transform.cssStyle,
@@ -422,7 +422,7 @@ Banner.prototype.animateCSS3D = function () {
     image.className = 'visible';
     
     // Fire transition
-    image.style[transitionJsStyle] = transformCssStyle + ' ' + (animations.transitionTime + fadeSpeed) + 'ms ' + that.options.ease3d + ', ' +
+    image.style[transitionJsStyle] = transformCssStyle + ' ' + (animation.duration + fadeSpeed) + 'ms ' + that.options.ease3d + ', ' +
                                      'opacity ' + fadeSpeed + 'ms';
 
     // fire transition in separate repaint frame
@@ -445,10 +445,10 @@ Banner.prototype.animateCSS3D = function () {
 
 Banner.prototype.animateJQuery = function () {
     var currentSlide = this.currentSlide,
-        animations = this.options.images[currentSlide].animations,
+        animation = this.options.images[currentSlide].animations,
         image = this.images[currentSlide].element,
-        startScale = animations.startScale,
-        endScale = animations.endScale,
+        startScale = animation.startScale,
+        endScale = animation.endScale,
         sw = image.width,
         sh = image.height,
         position = this.chooseCorner(),
@@ -472,7 +472,7 @@ Banner.prototype.animateJQuery = function () {
         width: sw * endScale,
         height: sh * endScale
     },  { 
-        duration: animations.transitionTime, 
+        duration: animation.duration, 
         queue: false 
     });
 
