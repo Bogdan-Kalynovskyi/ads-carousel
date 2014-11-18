@@ -11,7 +11,7 @@ template: [
  {% for im in images %}
      {
          img: "{{ im.rel_path }}",
-         animations: {
+         animation: {
              startPosition: { x: {{ im.start_x }}, y: {{ im.start_y }} },
              startScale: {{ im.initial_scale }},
              endPosition: { x: {{ im.end_x }}, y: {{ im.end_y }} },
@@ -37,7 +37,7 @@ var yellowArrow="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAAGzs
 var pluginName = 'Kenburns',
  defaults = {
      images:[],
-     animations: [],
+     animation: [],
      fadeSpeed:500,
      ease3d:'cubic-bezier(.81, 0, .26, 1)',
      onLoadingComplete:function(){},
@@ -125,10 +125,10 @@ if(this.has3d) {
  img.css({'-ms-transform-origin':'left top'});
  img.css({'transform-origin':'left top'});
  img.css({'-moz-transform-origin':'left top'});
- img.css({'-webkit-transform':'scale('+that.options.animations[index].startScale+') translate3d(0,0,0)'});
- img.css({'-ms-transform':'scale('+that.options.animations[index].startScale+') translate3d(0,0,0)'});
- img.css({'transform':'scale('+that.options.animations[index].startScale+') translate3d(0,0,0)'});
- img.css({'-moz-transform':'scale('+that.options.animations[index].startScale+') translate3d(0,0,0)'});
+ img.css({'-webkit-transform':'scale('+that.options.animation[index].startScale+') translate3d(0,0,0)'});
+ img.css({'-ms-transform':'scale('+that.options.animation[index].startScale+') translate3d(0,0,0)'});
+ img.css({'transform':'scale('+that.options.animation[index].startScale+') translate3d(0,0,0)'});
+ img.css({'-moz-transform':'scale('+that.options.animation[index].startScale+') translate3d(0,0,0)'});
 }
 
 //Switch the transition to the 3d version if it does exist
@@ -242,7 +242,7 @@ this.interval = setTimeout(function(){
  }else {
      that.startTransition(currentSlide);
  }
-},this.options.animations[currentSlide].showTime + 1500);
+},this.options.animation[currentSlide].showTime + 1500);
 }
 
 
@@ -254,8 +254,8 @@ this.interval = setTimeout(function(){
 */
 
 Plugin.prototype.chooseCorner = function() {
-// var scale = this.options.animations[currentSlide].startScale;
-// var endScale = this.options.animations[currentSlide].endScale;
+// var scale = this.options.animation[currentSlide].startScale;
+// var endScale = this.options.animation[currentSlide].endScale;
 // var image = imagesObj["image"+currentSlide].element;
 
 // var ratio = image.height/image.width;
@@ -288,9 +288,9 @@ Plugin.prototype.chooseCorner = function() {
 // var start = [];
 // var end = [];
 
-// if(this.options.animations[currentSlide].startPosition){
-//     start = this.options.animations[currentSlide].startPosition;
-//     end = this.options.animations[currentSlide].endPosition;
+// if(this.options.animation[currentSlide].startPosition){
+//     start = this.options.animation[currentSlide].startPosition;
+//     end = this.options.animation[currentSlide].endPosition;
 
 // }else{
 //     //Pick the first corner. Remove it from the array
@@ -323,15 +323,15 @@ Plugin.prototype.chooseCorner = function() {
 //         endY: end.y * (h/endScale - esh)
 //     }
 // }
-var scale = this.options.animations[currentSlide].startScale;
-var endScale = this.options.animations[currentSlide].endScale;
+var scale = this.options.animation[currentSlide].startScale;
+var endScale = this.options.animation[currentSlide].endScale;
 var image = imagesObj["image"+currentSlide].element;
 
 var width = 548;
 var height = 90;
 
-start = this.options.animations[currentSlide].startPosition;
-end = this.options.animations[currentSlide].endPosition;
+start = this.options.animation[currentSlide].startPosition;
+end = this.options.animation[currentSlide].endPosition;
 
 var w = $(this.element).width() - 180;
 var h = $(this.element).height();
@@ -365,12 +365,12 @@ return coordinates;
 Plugin.prototype.transition3d = function () {
 console.log("TRANSITION 3D")
 var that  = this;
-var scale = this.options.animations[currentSlide].startScale;
-var endScale = this.options.animations[currentSlide].endScale;
+var scale = this.options.animation[currentSlide].startScale;
+var endScale = this.options.animation[currentSlide].endScale;
 var image = imagesObj["image"+currentSlide].element;
 var position = this.chooseCorner();
 
-var score = this.options.animations[currentSlide].score;
+var score = this.options.animation[currentSlide].score;
 $("#score").text("Score : " + score);
 
 //First clear any existing transition
@@ -388,10 +388,10 @@ $(image).parent().css({'opacity':0,'z-index':'3'});
 $(image).parent().animate({'opacity':1},that.options.fadeSpeed);
 
 //Add the transition back in
-$(image).css({'-webkit-transition':'-webkit-transform '+(that.options.animations[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
-$(image).css({'-ms-transition':'-ms-transform '+(that.options.animations[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
-$(image).css({'transition':'transform '+(that.options.animations[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
-$(image).css({'-moz-transition':'-moz-transform '+(that.options.animations[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
+$(image).css({'-webkit-transition':'-webkit-transform '+(that.options.animation[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
+$(image).css({'-ms-transition':'-ms-transform '+(that.options.animation[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
+$(image).css({'transition':'transform '+(that.options.animation[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
+$(image).css({'-moz-transition':'-moz-transform '+(that.options.animation[currentSlide].showTime+that.options.fadeSpeed)+'ms '+that.options.ease3d});
 
 //set the end position and scale, which fires the transition
 $(image).css({'-webkit-transform':'scale(' + endScale + ') translate3d('+position.endX+'px,'+position.endY+'px,0)'});
@@ -420,14 +420,14 @@ Plugin.prototype.transition = function() {
 console.log("TRANSITION");
 var that  = this;
 var scale = this.options.scale;
-var endScale = this.options.animations[currentSlide].endScale;
+var endScale = this.options.animation[currentSlide].endScale;
 var image = imagesObj["image"+currentSlide].element;
 var sw = $(image).width();
 var sh = $(image).height();
 var position = this.chooseCorner();
 
 $(image).css({'left':position.startX,'top':position.startY,'width':sw*(scale),'height':sh*(scale)});
-$(image).animate({'left':position.endX,'top':position.endY,'width':sw,'height':sh}, that.options.animations[currentSlide].showTime + that.options.fadeSpeed);
+$(image).animate({'left':position.endX,'top':position.endY,'width':sw,'height':sh}, that.options.animation[currentSlide].showTime + that.options.fadeSpeed);
 
 $(image).parent().css({'opacity':0,'z-index':3});
 $(image).parent().animate({'opacity':1},that.options.fadeSpeed);
@@ -441,7 +441,7 @@ setTimeout(function(){
 Plugin.prototype.transitionOut = function() {
 var that = this;
 var image = imagesObj["image"+currentSlide].element;
-$(image).parent().delay(that.options.animations[currentSlide].showTime).animate({'opacity':0},that.options.fadeSpeed, function(){
+$(image).parent().delay(that.options.animation[currentSlide].showTime).animate({'opacity':0},that.options.fadeSpeed, function(){
  $(this).css({'z-index':1});
 });
 }
@@ -600,10 +600,10 @@ $('.fixedContent').append($headline);
 $('.fixedContent').append(stars);
 
 var images = [];
-var animations = [];
+var animation = [];
 $.each(jsonData.template, function(k, src){
  images.push(src.img);
- animations.push(src.animations);
+ animation.push(src.animation);
 });
 
 <!-- add the action -->
@@ -615,7 +615,7 @@ $('#wrapper').append($action);
 
 $('#wrapper').Kenburns({
  images: images,
- animations: animations,
+ animation: animation,
  scale: jsonData.startScale,
  fadeSpeed:1200,
  ease3d:'cubic-bezier(0.445, 0.050, 0.550, 0.950)'

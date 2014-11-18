@@ -199,7 +199,7 @@ function Banner(element, options) {
     this.transform = utils.testCSSSupport('transform');
     this.supportsCSS3 = this.transition && this.transform;
     
-    //Use jQuery animation as a fallback to CSS3 animations
+    //Use jQuery animation as a fallback to CSS3 animation
     if (!this.supportsCSS3) {
         var that = this;
         this.jQueryLoaded = false;
@@ -378,12 +378,12 @@ Banner.prototype.wait = function () {
  */
 
 Banner.prototype.chooseCorner = function () {
-    var animations = this.options.images[this.currentSlide].animations,
+    var animation = this.options.images[this.currentSlide].animation,
         image = this.images[this.currentSlide].element,
-        startScale = animations.startScale,
-        endScale = animations.endScale,
-        start = animations.startPosition,
-        end = animations.endPosition,
+        startScale = animation.startScale,
+        endScale = animation.endScale,
+        start = animation.startPosition,
+        end = animation.endPosition,
         w = this.element.clientWidth - 180,
         h = this.element.clientHeight,
         imw = image.width,
@@ -405,7 +405,7 @@ Banner.prototype.chooseCorner = function () {
 Banner.prototype.animateCSS3D = function () {
     var that = this,
         currentSlide = this.currentSlide,
-        animation = this.options.images[currentSlide].animations,
+        animation = this.options.images[currentSlide].animation,
         image = this.images[currentSlide].element,
         fadeSpeed = this.options.fadeSpeed,
         startScale = animation.startScale,
@@ -445,7 +445,7 @@ Banner.prototype.animateCSS3D = function () {
 
 Banner.prototype.animateJQuery = function () {
     var currentSlide = this.currentSlide,
-        animation = this.options.images[currentSlide].animations,
+        animation = this.options.images[currentSlide].animation,
         image = this.images[currentSlide].element,
         startScale = animation.startScale,
         endScale = animation.endScale,
