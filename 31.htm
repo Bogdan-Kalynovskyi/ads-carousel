@@ -10,7 +10,7 @@
             height: 248px;
             border: 1px solid;
         }
-        .carousel > img {
+        .carousel {
             margin-top: 70px;
             height: 178px;
             width: 298px;
@@ -21,11 +21,11 @@
             height: 70px;
         }
         .logoBg {
-             display: table-cell;
-             text-align: center;
-             vertical-align: middle; 
-             width: 300px;
-             height: 70px;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle; 
+            width: 300px;
+            height: 70px;
         }
         .logoBg > img {
             max-width: 130px;
@@ -40,6 +40,7 @@
 </head>
 <body>
     <div id=wrapper>
+        <div class=carousel></div>
         <div class=fixedContent>
             <a class=adLogo href=# target=_blank>
                 <div class=logoBg style="background: {{ logos[0].background_color }}">
@@ -51,7 +52,6 @@
         <p class=action>
             <a href="{{ destination_url }}" target=_blank>{{ button_text }}</a>
         </p>
-        <div class=carousel></div>
         <div class=loader></div>
         <div class=status></div>
     </div>
