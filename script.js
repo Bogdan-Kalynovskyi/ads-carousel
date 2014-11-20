@@ -129,7 +129,6 @@ function Banner(element, options) {
     this.element = element;
     this.options = options;
     
-    this.drawStuff();
     var carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
     
@@ -304,28 +303,6 @@ Banner.prototype.play = function () {
  */
 Banner.prototype.wait = function () {
     this.showLoader();
-};
-
-
-//TODO: this will become a template
-Banner.prototype.drawStuff = function () {
-    var html = 
-        '<div class=carousel></div>' +
-        '<div class=fixedContent>' +
-            '<a class=adLogo href="' + this.options.logoAction + '" target=_blank>' +
-                '<div class=logoBg style="background: ' + this.options.logoBackground + '">' +
-                    '<img src="' + this.options.logoImg + '" alt="">' +
-                '</div>' +
-            '</a>' +
-            '<div class=headline>' + this.options.headline + '</div>' +
-        '</div>' +
-        '<p class=action>' +
-            '<a href="' + this.options.actionLink + '" target=_blank>' + this.options.actionName + '</a>' +
-        '</p>' +
-        '<div class=loader></div>' +
-        '<div class=status></div>';
-    
-    this.element.innerHTML = html;
 };
 
 
