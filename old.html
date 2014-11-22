@@ -156,7 +156,7 @@ Plugin.prototype.resume = function(index){
 //first image has loaded
 if(index == 0) {
  this.startTransition(0);
- $(this.element).find('.loader').hide();
+ $(this.element).find('.loader').hidePreviousDelayed();
 
 }
 
@@ -165,7 +165,7 @@ if(index == 0) {
 // it will then resume the transition.
 if(index == this.holdup) {
  $('#status').html("");
- $(this.element).find('.loader').hide();
+ $(this.element).find('.loader').hidePreviousDelayed();
  this.startTransition(this.holdup);
 }
 

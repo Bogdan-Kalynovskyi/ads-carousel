@@ -6,8 +6,9 @@ var utils = {
         // Mozilla, Opera and Webkit
         if (document.addEventListener) {
             document.addEventListener("DOMContentLoaded", callback, false);
-            // If IE event model is used
-        } else if (document.attachEvent) {
+        }
+        // earlier IE
+        else if (document.attachEvent) {
             document.attachEvent("onreadystatechange", function () {
                 if (document.readyState === "complete") {
                     callback();
@@ -17,21 +18,21 @@ var utils = {
     },
 
     /**
-     * Test for CSS3 features support.
-     * This function is not generic, but it works well for transition and transform at least
+     * Test for CSS3 features support. Tested to work with transition and transform.
+     * Can be easily extended to support other features 
      */
-    testCSSSupport: function (feature, cssTestValue/* can be optional */) {
+    testCSSSupport: function (feature, cssTransform/* for transition: transform only */) {
         var testDiv,
             featureCapital = feature.charAt(0).toUpperCase() + feature.substr(1),
             vendors = ['', 'webkit', 'moz', 'ms'],
             jsPrefixes = ['', 'Webkit', 'Moz', 'ms'],
             defaultTestValues = {
-                transition: 'left 2s ease 1s',
+                transition: cssTransform + ' 2s ease 1s',
                 transform: 'rotateX(-180deg) translateZ(.5em) scale(0.5)' // this will test for 3D transform support
             },
             testFunctions = {
                 transition: function (jsProperty, computed) {
-                    return computed[jsProperty + 'Delay'] === '1s' && computed[jsProperty + 'Duration'] === '2s' && computed[jsProperty + 'Property'] === 'left';
+                    return computed[jsProperty + 'Property'] === cssTransform;
                 },
                 transform: function (jsProperty, computed) {
                     return computed[jsProperty].substr(0, 9) === 'matrix3d(';
@@ -41,11 +42,8 @@ var utils = {
         /* test given vendor prefix */
         function isStyleSupported(feature, jsPrefixedProperty) {
             if (testDiv.style[jsPrefixedProperty] !== undefined) {
-                var testVal = cssTestValue || defaultTestValues[feature],
+                var testVal = defaultTestValues[feature],
                     testFn = testFunctions[feature];
-                if (!testVal) {
-                    return false;
-                }
         
                 //Assume browser without getComputedStyle is either IE8 or something even more poor
                 if (!window.getComputedStyle) {
@@ -99,6 +97,11 @@ var utils = {
         return false;
     },
    
+    /**
+     * Asynchronously load js file
+     * and fire callback when completed.
+     * Code taken from jQuery 
+     */
     loadScript: function (src, callback) {
         var head = document.querySelector('head'),
             script = document.createElement('script'),
@@ -128,47 +131,45 @@ var utils = {
 function Banner(element, options) {
     this.element = element;
     this.options = options;
+    this.drawStuff();
     
-    var carousel = this.$('.carousel'),
+    var that = this,
+        carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
     
     this.slides = this.options.slides;
     this.maxSlides = this.slides.length;
     this.index = 0;
+    this.slide = this.slides[0];
+    this.previousSlide = -1;
     this.slidesShown = 0;
-    this.slide = this.slides[this.index];
     this.width = this.element.clientWidth;
     this.height = this.element.clientHeight;
     if (window.getComputedStyle) {
         var computed = window.getComputedStyle(carousel);
-        this.marginTop = parseInt(computed.marginTop);
-        this.marginLeft = parseInt(computed.marginLeft);
+        this.width -= parseInt(computed.marginLeft);
+        this.height -= parseInt(computed.marginTop);
     }
-    else {
-        this.marginTop = 0;
-        this.marginLeft = 0;
-    }
-    this.isLoading = true;
+    this.isWaiting = true;
 
     //CSS3 feature support is a critical part
-    this.transition = utils.testCSSSupport('transition');
     this.transform = utils.testCSSSupport('transform');
+    if (this.transform) {
+        this.transition = utils.testCSSSupport('transition', this.transform.cssStyle);
+    }
     this.supportsCSS3 = this.transition && this.transform;
 
     this.drawStars();
   
     for (var i = 0; i < this.maxSlides; i++) {
-        fragment.appendChild(this.loadImage(i));
+        fragment.appendChild(this.loadImage(this.slides[i]));
     }
     carousel.appendChild(fragment);
     
     //Use jQuery animation as a fallback to CSS3 animation
-    if (!this.supportsCSS3) {
-        var that = this;
-        this.jQueryLoaded = false;
+    if (!this.supportsCSS3 && typeof jQuery === 'undefined') {
         utils.loadScript('//code.jquery.com/jquery-1.11.1.min.js', function () {
-            that.jQueryLoaded = true;
-            that.play();  //start playing only when jQuery is loaded
+            that.tryToPlay();  //start playing only when jQuery is loaded
         });
     }
 }
@@ -214,118 +215,122 @@ Banner.prototype.drawStars = function () {
 };
 
 
-Banner.prototype.showLoader = function () {
-    this.$('.loader').style.display = '';
-    this.$('.status').innerHTML = 'Loading...';
-    this.isLoading = true;
+Banner.prototype.lockAnimation = function () {
+    if (!this.isWaiting) {
+        this.$('.loader').style.display = '';
+        this.isWaiting = true;
+    }
 };
 
 
-Banner.prototype.hideLoader = function () {
-    this.$('.loader').style.display = 'none';
-    this.$('.status').innerHTML = '';
-    this.isLoading = false;
+Banner.prototype.unlockAnimation = function () {
+    if (this.isWaiting) {
+        this.$('.loader').style.display = 'none';
+        this.isWaiting = false;
+    }
 };
 
 
-Banner.prototype.loadImage = function (index) {
+Banner.prototype.loadImage = function (slide) {
     var that = this,
         image = new Image();
 
     image.onload = function () {
-        var slide = that.slides[index];
         slide.image = this;
         slide.width = this.width;
         slide.height = this.height;
 
-        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
-            that.play();
-        }
+        that.tryToPlay();
     };
     
     image.onerror = function() {
-        that.slides.splice(index,  1);
+        that.slides.splice(that.slides.indexOf(slide),  1);
         that.maxSlides--;
-        if (that.index === that.maxSlides) {
+        if (that.slide === slide) {
             that.index = 0;
+            that.slide = that.slides[0];
         }
         
-        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
-            that.play();
-        }
-        throw "could not load image " + index; 
+        that.tryToPlay();
+        throw "could not load image " + slide.imageSrc; 
     };
  
-    image.src = this.slides[index].imageSrc;
-    image.alt = 'image ' + index;
+    image.src = slide.imageSrc;
     image.className = 'hidden';
     image.style.opacity = 0;
 
     // Setup transition
     if (this.supportsCSS3) {
-        var animation = this.slides[index].animation,
+        var animation = slide.animation,
             transformCssStyle = this.transform.cssStyle,
             transitionJsStyle = this.transition.jsStyle;
-        image.style[transitionJsStyle] = transformCssStyle + ' ' + animation.duration + 'ms ' + this.options.ease3d + ', opacity ' + this.options.fadeSpeed + 'ms';
+        image.style[transitionJsStyle] = transformCssStyle + ' ' + animation.duration + 'ms ' + this.options.ease3d + 
+                                         ', opacity ' + this.options.fadeSpeed + 'ms';
     }
     
     return image;
 };
 
 
-Banner.prototype.play = function () {
-    //If the image is not loaded, turn on waiting mode
-    if (!this.slide.image) {
-        this.wait();
-        return;
+Banner.prototype.tryToPlay = function () {
+    if (this.isWaiting) {
+        this.makeMove();    
     }
-    this.hideLoader();
+};
 
-    if (this.supportsCSS3) {
-        this.animateCSS3D();
-    }
-    else {
-        this.animateJQuery();
-    }
+
+Banner.prototype.makeMove = function () {
+    // Play only if the image (and optionally jQuery) is loaded
+    if (this.slide.image && (this.supportsCSS3 || typeof jQuery !== 'undefined')) {
+        this.slidesShown++;
+   
+        this.unlockAnimation();
+       
+        if (this.supportsCSS3) {
+            this.animateCSS3D();
+        }
+        else {
+            this.animateJQuery();
+        }
+      
+        if (this.previousSlide !== -1) {
+            this.hidePreviousDelayed();
+        }
+        
+        this.scheduleNextMove();
     
-    //Advance the current slide
-    this.index++;
-    if (this.index === this.maxSlides) {
-        this.index = 0;
+        // advance the current slide
+        this.previousSlide = this.slide;
+        this.index++;
+        if (this.index === this.maxSlides) {
+            this.index = 0;
+        }
+        this.slide = this.slides[this.index];
     }
-    this.slide = this.slides[this.index];
+    // otherwise turn on waiting mode
+    else {
+        this.lockAnimation();
+    }
 };
 
 
 /**
- * Stops the transition interval, shows the loader and
- * applies the stalled class to the visible image.
- */
-Banner.prototype.wait = function () {
-    this.showLoader();
-};
-
-
-/**
- * This function chooses a random start corner and a random end corner
- * that is different from the start. This gives a random direction effect
- * it returns coordinates used by the transition functions.
+ * Chooses random start corner and random end corner that is different from the start. 
+ * This gives a random direction effect. Returns coordinates.
  */
 
 Banner.prototype.chooseCorner = function () {
     var animation = this.slide.animation,
         startScale = animation.startScale,
         endScale = animation.endScale,
-        w = this.width - this.marginLeft,
-        h = this.height - this.marginTop,
         imageW = this.slide.width,
         imageH = this.slide.height;
 
     return {
-        startX: animation.startX * (w / startScale - imageW),
-        startY: animation.startY * (h / startScale - imageH),
-        endX: animation.endX * (w / endScale - imageW),
-        endY: animation.endY * (h / endScale - imageH)
+        startX: animation.startX * (this.width / startScale - imageW),
+        startY: animation.startY * (this.height / startScale - imageH),
+        endX: animation.endX * (this.width / endScale - imageW),
+        endY: animation.endY * (this.height / endScale - imageH)
     };
 };
 
@@ -354,22 +359,18 @@ Banner.prototype.animateCSS3D = function () {
         image.style.opacity = 1;
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';
     }, 20);
-    
-    this.moveEnd(this.slide);
 };
 
 
 /**
- *  The regular JQuery animation function. Sets the index initial position to
- *  the value from chooseCorner before triggering the animation. It starts the image moving to
- *  the new position, starts the fade on the wrapper, and delays the fade out animation.
+ *  The regular JQuery animation function
  */
 
 Banner.prototype.animateJQuery = function () {
     var animation = this.slide.animation,
         image = this.slide.image,
         startScale = animation.startScale,
-        endScale = animation.endScale,
+        //endScale = animation.endScale,
         imageW = this.slide.width,
         imageH = this.slide.height,
         position = this.chooseCorner(),
@@ -379,15 +380,14 @@ Banner.prototype.animateJQuery = function () {
     $image.css({
         left: position.startX,
         top: position.startY,
-        width: imageW,// * startScale,
-        height: imageH// * startScale
+        width: imageW * startScale,
+        height: imageH * startScale
     });
     
     // Bring to front
     image.className = '';
     image.style.zIndex = this.slidesShown;
-    
-    /*
+/*    
     // fire animation
     $image.animate({
         left: position.endX,
@@ -397,37 +397,40 @@ Banner.prototype.animateJQuery = function () {
     },  { 
         duration: animation.duration + this.options.fadeSpeed, 
         queue: false 
-    });
-    */
+    });*/
     $image.animate({
         opacity: 1
     },  { 
         duration: this.options.fadeSpeed, 
         queue: false 
     });
-
-    this.moveEnd(this.slide);
 };
 
 
-Banner.prototype.moveEnd = function (slide) {
+/* Schedule the next animation */
+Banner.prototype.scheduleNextMove = function () {
     var that = this;
-
-    this.slidesShown++;
+    
     setTimeout(function () {
         that.options.onSlideComplete && that.options.onSlideComplete();
         
+        that.makeMove();
+    }, this.options.delayBetweenSlides + this.options.fadeSpeed);
+};
+
+
+/* Once displayed, the images should obligatory be hidden */ 
+Banner.prototype.hidePreviousDelayed = function () {
+    var that = this,
+        image = this.previousSlide.image;
+    
+    setTimeout(function () {
+        image.className = 'hidden';
+        if (!that.supportsCSS3) {
+            $(image).stop();
+        }
         setTimeout(function () {
-            var image = slide.image;
-            image.className = 'hidden';
-            if (!that.supportsCSS3) {
-                $(image).stop();
-            }
-            setTimeout(function () {
-                image.style.opacity = 0;
-            }, 20);
-        }, that.options.fadeSpeed);
-        
-        that.play();
-    }, this.options.delayBetweenSlides);
+            image.style.opacity = 0;
+        }, 20);
+    }, this.options.fadeSpeed);
 };

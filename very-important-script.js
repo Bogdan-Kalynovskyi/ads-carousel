@@ -179,7 +179,7 @@ function Banner(element, options) {
     this.currentSlide = 0;
     this.width = this.element.clientWidth;
     this.height = this.element.clientHeight;
-    this.isLoading = true;
+    this.isWaiting = true;
     
     this.drawStuff();
     this.drawStars();
@@ -269,15 +269,15 @@ Banner.prototype.drawStars = function () {
 };
 
 
-Banner.prototype.showLoader = function () {
-    this.isLoading = true;
+Banner.prototype.lockAnimation = function () {
+    this.isWaiting = true;
     this.loader.style.display = '';
     this.status.innerHTML = 'Loading...';
 };
 
 
-Banner.prototype.hideLoader = function () {
-    this.isLoading = false;
+Banner.prototype.lockAnimation = function () {
+    this.isWaiting = false;
     this.loader.style.display = 'none';
     this.status.innerHTML = '';
 };
@@ -310,7 +310,7 @@ Banner.prototype.loadImage = function (index, src) {
             that.options.onLoadingComplete();
         }
 
-        if (that.isLoading && (that.supportsCSS3 || that.jQueryLoaded)) {
+        if (that.isWaiting && (that.supportsCSS3 || that.jQueryLoaded)) {
             that.play();
         }
     };
@@ -345,7 +345,7 @@ Banner.prototype.play = function () {
         this.wait();
         return;
     }
-    this.hideLoader();
+    this.lockAnimation();
 
     if (this.supportsCSS3) {
         this.animateCSS3D();
@@ -367,7 +367,7 @@ Banner.prototype.play = function () {
  * applies the stalled class to the visible image.
  */
 Banner.prototype.wait = function () {
-    this.showLoader();
+    this.lockAnimation();
 };
 
 
@@ -431,7 +431,7 @@ Banner.prototype.animateCSS3D = function () {
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';   
     }, 0);
 
-    this.moveEnd(currentSlide);
+    this.onMove(currentSlide);
 };
 
 
@@ -483,11 +483,11 @@ Banner.prototype.animateJQuery = function () {
         queue: false 
     });
 
-    this.moveEnd(currentSlide);
+    this.onMove(currentSlide);
 };
 
 
-Banner.prototype.moveEnd = function (index) {
+Banner.prototype.onMove = function (index) {
     var that = this;
     setTimeout(function () {
         that.options.onSlideComplete();
