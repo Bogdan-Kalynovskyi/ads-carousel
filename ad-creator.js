@@ -19,7 +19,7 @@ var utils = {
 
     /**
      * Test for CSS3 features support. Tested to work with transition and transform.
-     * Can be easily extended to support other features 
+     * Can be easily extended to support other features
      */
     testCSSSupport: function (feature, cssTransform/* for transition: transform only */) {
         var testDiv,
@@ -44,7 +44,7 @@ var utils = {
             if (testDiv.style[jsPrefixedProperty] !== undefined) {
                 var testVal = defaultTestValues[feature],
                     testFn = testFunctions[feature];
-        
+
                 //Assume browser without getComputedStyle is either IE8 or something even more poor
                 if (!window.getComputedStyle) {
                     return false;
@@ -96,29 +96,29 @@ var utils = {
 
         return false;
     },
-   
+
     /**
      * Asynchronously load js file
      * and fire callback when completed.
-     * Code taken from jQuery 
+     * Code taken from jQuery
      */
     loadScript: function (src, callback) {
         var head = document.querySelector('head'),
             script = document.createElement('script'),
             done = false;
-        
+
         // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function() {
+        script.onload = script.onreadystatechange = function () {
             if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
                 done = true;
                 callback();
-                
+
                 // Handle memory leak in IE
                 script.onload = script.onreadystatechange = null;
-                head.removeChild( script );
+                head.removeChild(script);
             }
         };
-        
+
         script.src = src;
         head.insertBefore(script, head.firstChild);
     }
@@ -131,8 +131,7 @@ var utils = {
 function Banner(element, options) {
     this.element = element;
     this.options = options;
-    this.drawStuff();
-    
+
     var that = this,
         carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
@@ -358,7 +357,7 @@ Banner.prototype.animateCSS3D = function () {
     setTimeout(function() {
         image.style.opacity = 1;
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';
-    }, 20);
+    }, 120);
 };
 
 
@@ -431,6 +430,6 @@ Banner.prototype.hidePreviousDelayed = function () {
         }
         setTimeout(function () {
             image.style.opacity = 0;
-        }, 20);
+        }, 120);
     }, this.options.fadeSpeed);
 };
