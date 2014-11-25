@@ -3,8 +3,11 @@
 <head lang=en>
     <meta charset="UTF-8">
     <title>AD Template</title>
-    <link href="https://s3-us-west-2.amazonaws.com/assets.ad-rapid.com/stylesheets/ken.burns-styles.css" rel=stylesheet>
+    <link href="{{asset_base_url}}stylesheets/ken.burns-styles.css" rel=stylesheet>
     <style>
+        a img {
+            border: 0;
+        }
         #wrapper {
             width: 158px;
             height: 598px;
@@ -44,18 +47,18 @@
         <div class=fixedContent>
             <a class=adLogo href=# target=_blank>
                 <div class=logoBg style="background: {{ logos[0].background_color }}">
-                    <img src="{{ logos[0].rel_path }}" alt="">
+                    <img src="{{ logo.rel_path }}" alt="">
                 </div>
             </a>
             <div class=headline>{{ headline.text }}</div>
         </div>
         <p class=action>
-            <a href="{{ destination_url }}" target=_blank>{{ button_text }}</a>
+            <a href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
         </p>
         <div class=loader></div>
     </div>
     
-    <script src="https://s3-us-west-2.amazonaws.com/assets.ad-rapid.com/javascripts/ken.burns-creator.js"></script>
+    <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
     <script>
         
         // JSON Data for templates

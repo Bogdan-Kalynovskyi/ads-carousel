@@ -42,52 +42,52 @@
     </style>
 </head>
 <body>
-<div id=wrapper>
-    <div class=carousel></div>
-    <div class=fixedContent>
-        <a class=adLogo href=# target=_blank>
-            <div class=logoBg style="background: {{ logo.background_color }}">
-                <img src="{{ logo.rel_path }}" alt="">
-            </div>
-        </a>
-        <div class=headline>{{ headline.text }}</div>
+    <div id=wrapper>
+        <div class=carousel></div>
+        <div class=fixedContent>
+            <a class=adLogo href=# target=_blank>
+                <div class=logoBg style="background: {{ logo.background_color }}">
+                    <img src="{{ logo.rel_path }}" alt="">
+                </div>
+            </a>
+            <div class=headline>{{ headline.text }}</div>
+        </div>
+        <p class=action>
+            <a href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
+        </p>
+        <div class=loader></div>
     </div>
-    <p class=action>
-        <a href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
-    </p>
-    <div class=loader></div>
-</div>
 
-<script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
-<script>
+    <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
+    <script>
 
-    // JSON Data for templates
-    var jsonData = {
-        slides: [
-        {% for im in images %}
-    {
-        imageSrc: "{{ im.rel_path }}",
-                animation: {
-        startX: {{ im.start_x }},
-        startY: {{ im.start_y }},
-        endX: {{ im.end_x }},
-        endY: {{ im.end_y }},
-        startScale: {{ im.initial_scale }},
-        endScale: {{ im.final_scale }},
-        duration: {{ im.showtime }},
-    }
-    },
-    {% endfor %}
-    ],
-    rates: [2.4, 4],
+        // JSON Data for templates
+        var jsonData = {
+            slides: [
+                {% for im in images %}
+                    {
+                        imageSrc: "{{ im.rel_path }}",
+                        animation: {
+                            startX: {{ im.start_x }},
+                            startY: {{ im.start_y }},
+                            endX: {{ im.end_x }},
+                            endY: {{ im.end_y }},
+                            startScale: {{ im.initial_scale }},
+                            endScale: {{ im.final_scale }},
+                            duration: {{ im.showtime }},
+                        }
+                    },
+                {% endfor %}
+            ],
+            rates: [2.4, 4],
             fadeSpeed: 1200,
             delayBetweenSlides: 1500,
             ease3d: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)'
-    };
+        };
 
-    utils.domReady(function() {
-        new Banner(document.getElementById('wrapper'), jsonData);
-    });
-</script>
+        utils.domReady(function() {
+            new Banner(document.getElementById('wrapper'), jsonData);
+        });
+    </script>
 </body>
 </html>
