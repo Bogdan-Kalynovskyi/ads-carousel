@@ -12,8 +12,7 @@
     <script src="ken.burns-creator.js"></script>
     <script>
 
-//    JSON Data for templates
-var jsonData = {
+var templateData = {
     slides: [
         
             {
@@ -88,7 +87,7 @@ var jsonData = {
             '<div class=carousel></div>' +
             '<div class=fixedContent>' +
                 '<a class=adLogo href="' + this.options.logoAction + '" target=_blank>' +
-                    '<div class=logoBg style="background: ' + this.options.logoBackground + '">' +
+                    '<div class=logoBg style="background-color: ' + this.options.logoBackground + '">' +
                         '<img src="' + this.options.logoImg + '" alt="">' +
                     '</div>' +
                 '</a>' +
@@ -104,7 +103,7 @@ var jsonData = {
     
 
         utils.domReady(function() {
-            new Banner(document.getElementById('wrapper'), jsonData);
+            new Banner(document.getElementById('wrapper'), templateData);
         });
     </script>  
 </body>

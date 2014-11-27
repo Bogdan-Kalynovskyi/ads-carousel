@@ -5,13 +5,16 @@
     <title>AD Template</title>
     <link href="{{asset_base_url}}stylesheets/ken.burns-styles.css" rel=stylesheet>
     <style>
-        a img {
-            border: 0;
-        }
         #wrapper {
             width: 726px; 
             height: 88px; 
             border: 1px solid;
+            {% if background_color %}    
+              background-color:{{background_color.rgb}};
+            {% endif %}
+            {% if foreground_color %}    
+              color:{{foreground_color.rgb}};
+            {% endif %}
         }
         .carousel {
             width: 548px;
@@ -32,33 +35,40 @@
             vertical-align: middle; 
             width: 180px;
             height: 90px;
+            background-color: {{ logo.background_color }};
         }
         .logoBg > img {
             max-width: 150px; 
+        }
+        
+        .action {
+            {% if call_to_action.background_color %}    
+              background-color:{{call_to_action.background_color.rgb}};
+            {% endif %}
+            {% if call_to_action.foreground_color %}    
+              color:{{call_to_action.foreground_color.rgb}};
+            {% endif %}            
         }
     </style>
 </head>
 <body>
     <div id=wrapper>
         <div class=carousel></div>
+        <div class=loader></div>
         <div class=fixedContent>
             <a class=adLogo href=# target=_blank>
-                <div class=logoBg style="background: {{ logos.background_color }}">
+                <div class=logoBg>
                     <img src="{{ logo.rel_path }}">
                 </div>
             </a>
         </div>
-        <p class=action>
-            <a href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
-        </p>
-        <div class=loader></div>
+        <a class=action href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
     </div>
     
     <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
     <script>
         
-        // JSON Data for templates
-        var jsonData = {
+        var templateData = {
             slides: [
                 {% for im in images %}
                     {
@@ -82,7 +92,7 @@
         };
         
         utils.domReady(function() {
-            new Banner(document.getElementById('wrapper'), jsonData);
+            new Banner(document.getElementById('wrapper'), templateData);
         });
     </script>
 </body>

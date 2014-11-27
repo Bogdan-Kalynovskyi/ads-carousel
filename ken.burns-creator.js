@@ -137,11 +137,10 @@ function Banner(element, options) {
         fragment = document.createDocumentFragment();
     
     this.slides = this.options.slides;
-    this.maxSlides = this.slides.length;
     this.index = 0;
     this.slide = this.slides[0];
-    this.previousSlide = -1;
-    this.slidesShown = 0;
+    this.previousSlide = null;
+    this.movesCount = 0;
     this.width = this.element.clientWidth;
     this.height = this.element.clientHeight;
     if (window.getComputedStyle) {
@@ -157,10 +156,8 @@ function Banner(element, options) {
         this.transition = utils.testCSSSupport('transition', this.transform.cssStyle);
     }
     this.supportsCSS3 = this.transition && this.transform;
-
-    this.drawStars();
   
-    for (var i = 0; i < this.maxSlides; i++) {
+    for (var i = 0, len = this.slides.length; i < len; i++) {
         fragment.appendChild(this.loadImage(this.slides[i]));
     }
     carousel.appendChild(fragment);
@@ -176,41 +173,6 @@ function Banner(element, options) {
 
 Banner.prototype.$ = function (selector) {
     return this.element.querySelector(selector);
-};
-
-
-Banner.prototype.drawStars = function () {
-    var html = '';
-    
-    for (var r = 0, ratesCount = this.options.rates.length; r < ratesCount; r++) {
-        var rate = this.options.rates[r],
-            rateInt = Math.floor(rate),
-            rateSub = rate - rateInt,
-            starOn = '',
-            style = '';
-        
-        //hotfix //TODO: the star is not centered on the image, //FIXME  
-        if (rateSub > .1) {
-            rateSub -= .1;
-        }
-
-        html += '<div class=stars>';
-        for (var i = 0; i < 6; i++) {
-            if (i === rateInt) {
-                starOn = ' star-on';
-                style = ' style="width: ' + rateSub + 'em; margin-right: ' + (1 - rateSub) + 'em"';
-            }
-            else {
-                style = '';
-            }
-            html += '<div class="star' + starOn + '"' + style + '></div>';
-        }
-        html += '</div>';
-    }
-    
-    var fragment = document.createElement('div');
-    fragment.innerHTML = html;
-    this.$('.fixedContent').appendChild(fragment);
 };
 
 
@@ -244,7 +206,6 @@ Banner.prototype.loadImage = function (slide) {
     
     image.onerror = function() {
         that.slides.splice(that.slides.indexOf(slide),  1);
-        that.maxSlides--;
         if (that.slide === slide) {
             that.index = 0;
             that.slide = that.slides[0];
@@ -272,7 +233,7 @@ Banner.prototype.loadImage = function (slide) {
 
 
 Banner.prototype.tryToPlay = function () {
-    if (this.isWaiting) {
+    if (this.isWaiting && this.slides.length > 1) {
         this.makeMove();    
     }
 };
@@ -281,7 +242,7 @@ Banner.prototype.tryToPlay = function () {
 Banner.prototype.makeMove = function () {
     // Play only if the image (and optionally jQuery) is loaded
     if (this.slide.image && (this.supportsCSS3 || typeof jQuery !== 'undefined')) {
-        this.slidesShown++;
+        this.movesCount++;
    
         this.unlockAnimation();
        
@@ -292,7 +253,7 @@ Banner.prototype.makeMove = function () {
             this.animateJQuery();
         }
       
-        if (this.previousSlide !== -1) {
+        if (this.previousSlide) {
             this.hidePreviousDelayed();
         }
         
@@ -301,7 +262,7 @@ Banner.prototype.makeMove = function () {
         // advance the current slide
         this.previousSlide = this.slide;
         this.index++;
-        if (this.index === this.maxSlides) {
+        if (this.index === this.slides.length) {
             this.index = 0;
         }
         this.slide = this.slides[this.index];
@@ -326,10 +287,10 @@ Banner.prototype.chooseCorner = function () {
         imageH = this.slide.height;
 
     return {
-        startX: animation.startX * (this.width / startScale - imageW),
-        startY: animation.startY * (this.height / startScale - imageH),
-        endX: animation.endX * (this.width / endScale - imageW),
-        endY: animation.endY * (this.height / endScale - imageH)
+        startX: animation.startX * (this.width - imageW / startScale),
+        startY: animation.startY * (this.height - imageH / startScale),
+        endX: animation.endX * (this.width - imageW / endScale),
+        endY: animation.endY * (this.height - imageH / endScale)
     };
 };
 
@@ -351,13 +312,13 @@ Banner.prototype.animateCSS3D = function () {
 
     // Bring to front
     image.className = '';
-    image.style.zIndex = this.slidesShown;
+    image.style.zIndex = this.movesCount;
 
     // fire transition
     setTimeout(function() {
         image.style.opacity = 1;
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';
-    }, 120);
+    }, 140);
 };
 
 
@@ -385,7 +346,7 @@ Banner.prototype.animateJQuery = function () {
     
     // Bring to front
     image.className = '';
-    image.style.zIndex = this.slidesShown;
+    image.style.zIndex = this.movesCount;
 /*    
     // fire animation
     $image.animate({
@@ -430,6 +391,6 @@ Banner.prototype.hidePreviousDelayed = function () {
         }
         setTimeout(function () {
             image.style.opacity = 0;
-        }, 120);
+        }, 140);
     }, this.options.fadeSpeed);
 };
