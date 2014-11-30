@@ -500,7 +500,7 @@ Banner.prototype.onMove = function (index) {
             setTimeout(function () {
                 image.style.opacity = 0;
             }, 10);
-        }, that.options.delayBetweenSlides + that.options.fadeSpeed);
+        }, that.options.pauseBetweenAnimations + that.options.fadeSpeed);
         that.play();
-    }, this.options.delayBetweenSlides + this.options.fadeSpeed);
+    }, this.options.pauseBetweenAnimations + this.options.fadeSpeed);
 };

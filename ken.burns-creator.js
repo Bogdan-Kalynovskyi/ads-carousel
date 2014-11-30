@@ -131,7 +131,7 @@ var utils = {
 function Banner(element, options) {
     this.element = element;
     this.options = options;
-
+this.drawStuff();
     var that = this,
         carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
@@ -200,7 +200,9 @@ Banner.prototype.loadImage = function (slide) {
         slide.image = this;
         slide.width = this.width;
         slide.height = this.height;
-
+        if (that.movesCount) {  // show first frame immediately
+            image.style.opacity = 0;
+        }
         that.tryToPlay();
     };
     
@@ -217,7 +219,6 @@ Banner.prototype.loadImage = function (slide) {
  
     image.src = slide.imageSrc;
     image.className = 'hidden';
-    image.style.opacity = 0;
 
     // Setup transition
     if (this.supportsCSS3) {
@@ -242,8 +243,8 @@ Banner.prototype.tryToPlay = function () {
 Banner.prototype.makeMove = function () {
     // Play only if the image (and optionally jQuery) is loaded
     if (this.slide.image && (this.supportsCSS3 || typeof jQuery !== 'undefined')) {
+
         this.movesCount++;
-   
         this.unlockAnimation();
        
         if (this.supportsCSS3) {
@@ -253,10 +254,7 @@ Banner.prototype.makeMove = function () {
             this.animateJQuery();
         }
       
-        if (this.previousSlide) {
-            this.hidePreviousDelayed();
-        }
-        
+        this.hidePreviousSlide();
         this.scheduleNextMove();
     
         // advance the current slide
@@ -281,16 +279,14 @@ Banner.prototype.makeMove = function () {
 
 Banner.prototype.chooseCorner = function () {
     var animation = this.slide.animation,
-        startScale = animation.startScale,
-        endScale = animation.endScale,
         imageW = this.slide.width,
         imageH = this.slide.height;
 
     return {
-        startX: animation.startX * (this.width - imageW / startScale),
-        startY: animation.startY * (this.height - imageH / startScale),
-        endX: animation.endX * (this.width - imageW / endScale),
-        endY: animation.endY * (this.height - imageH / endScale)
+        startX: animation.startX * (this.width - imageW) * animation.startScale,
+        startY: animation.startY * (this.height - imageH) * animation.startScale,
+        endX: animation.endX * (this.width - imageW) * animation.endScale,
+        endY: animation.endY * (this.height - imageH) * animation.endScale
     };
 };
 
@@ -373,24 +369,25 @@ Banner.prototype.scheduleNextMove = function () {
     
     setTimeout(function () {
         that.options.onSlideComplete && that.options.onSlideComplete();
-        
         that.makeMove();
-    }, this.options.delayBetweenSlides + this.options.fadeSpeed);
+    }, this.slide.animation.duration + this.options.pauseBetweenAnimations);
 };
 
 
 /* Once displayed, the images should obligatory be hidden */ 
-Banner.prototype.hidePreviousDelayed = function () {
-    var that = this,
-        image = this.previousSlide.image;
-    
-    setTimeout(function () {
-        image.className = 'hidden';
-        if (!that.supportsCSS3) {
-            $(image).stop();
-        }
+Banner.prototype.hidePreviousSlide = function () {
+    if (this.previousSlide) {
+        var that = this,
+            image = this.previousSlide.image;
+
         setTimeout(function () {
-            image.style.opacity = 0;
-        }, 140);
-    }, this.options.fadeSpeed);
+            image.className = 'hidden';
+            if (!that.supportsCSS3) {
+                $(image).stop();
+            }
+            setTimeout(function () {
+                image.style.opacity = 0;
+            }, 140);
+        }, this.options.fadeSpeed);
+    }
 };

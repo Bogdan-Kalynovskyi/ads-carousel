@@ -16,18 +16,18 @@ var templateData = {
     slides: [
         
             {
-                imageSrc: "1.jpg",
+                imageSrc: "1.png",
                 animation: {
-                    startX: 1,
-                    startY: 1,
+                    startX: 0,
+                    startY: 0,
                     endX: 1,
                     endY: 1,
-                    startScale: 1.0,
-                    endScale: 1.2,
+                    startScale: 1.4,
+                    endScale: 1,
                     duration: 7000,
                 }
             },
-        
+        /*
             {
                 imageSrc: "2.jpg",
                 animation: {
@@ -52,7 +52,7 @@ var templateData = {
                     endScale: 1.2,
                     duration: 7000,
                 }
-            },
+            },*/
             {
                 imageSrc: "9.jpg",
                 animation: {
@@ -65,8 +65,7 @@ var templateData = {
                     duration: 7000,
                 }
             },
-        
-        
+
     ],
     logoImg: "logos/logo_1.png",
     logoBackground: "rgb(6,6,6)",
@@ -75,9 +74,9 @@ var templateData = {
     rates: [3.5],
     actionLink: "#",
     actionText: "See now",
-    fadeSpeed: 5200,
-    delayBetweenSlides: 1500,
-    ease3d: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)'
+    fadeSpeed: 0,
+    pauseBetweenAnimations: 7500,
+    ease3d: 'ease'
 };
 
     
@@ -85,6 +84,7 @@ var templateData = {
     Banner.prototype.drawStuff = function () {
         var html = 
             '<div class=carousel></div>' +
+            '<div class=loader></div>' +
             '<div class=fixedContent>' +
                 '<a class=adLogo href="' + this.options.logoAction + '" target=_blank>' +
                     '<div class=logoBg style="background-color: ' + this.options.logoBackground + '">' +
@@ -95,9 +95,8 @@ var templateData = {
             '</div>' +
             '<p class=action>' +
                 '<a href="' + this.options.actionLink + '" target=_blank>' + this.options.actionName + '</a>' +
-            '</p>' +
-            '<div class=loader></div>';
-        
+            '</p>';
+
         this.element.innerHTML = html;
     };
     
