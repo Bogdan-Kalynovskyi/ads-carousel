@@ -25,14 +25,10 @@ a img {
     position: absolute;
     left: 0;
     top: 0;
-    /* neither version of IE has prefixed 3d transform */
-    -webkit-transform: translate3d(0,0,0);
-    -moz-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
 
-    -webkit-transform-origin: left top;
-    -moz-transform-origin: left top;
-    transform-origin: left top;
+    -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    transform-origin: 0 0;
 }
 
 .hidden {

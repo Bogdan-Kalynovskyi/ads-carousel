@@ -1,12 +1,11 @@
 #wrapper {
-    width: 726px; 
-    height: 88px; 
-    border: 1px solid;
+    width: 728px;
+    height: 90px;
 }
 .carousel {
+    left: 180px;
     width: 548px;
     height: 90px;
-    margin-left: 180px;
 }
 .fixedContent {
     width: 400px;
