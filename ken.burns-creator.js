@@ -129,20 +129,21 @@ var utils = {
  ------------------------------------------------------------------------------------------------- */
 
 function Banner(element, options) {
-    this.carousel = element;
+    this.wrapper = element;
     this.options = options;
 
     var that = this,
-        carousel = this.$('.carousel'),
+        carousel = this.wrapper.querySelector('.carousel'),
         fragment = document.createDocumentFragment();
-    
+
     this.slides = this.options.slides;
     this.index = 0;
     this.slide = this.slides[0];
     this.previousSlide = null;
     this.movesCount = 0;
-    this.carouselWidth = this.carousel.clientWidth;
-    this.carouselHeight = this.carousel.clientHeight;
+    this.carouselWidth = carousel.clientWidth;
+    this.carouselHeight = carousel.clientHeight;
+    this.loader = this.wrapper.querySelector('.loader');
     this.isWaiting = true;
 
     //CSS3 feature support is a critical part
@@ -166,14 +167,9 @@ function Banner(element, options) {
 }
 
 
-Banner.prototype.$ = function (selector) {
-    return this.carousel.querySelector(selector);
-};
-
-
 Banner.prototype.lockAnimation = function () {
     if (!this.isWaiting) {
-        this.$('.loader').style.display = '';
+        this.loader.style.display = '';
         this.isWaiting = true;
     }
 };
@@ -181,7 +177,7 @@ Banner.prototype.lockAnimation = function () {
 
 Banner.prototype.unlockAnimation = function () {
     if (this.isWaiting) {
-        this.$('.loader').style.display = 'none';
+        this.loader.style.display = 'none';
         this.isWaiting = false;
     }
 };
@@ -189,12 +185,18 @@ Banner.prototype.unlockAnimation = function () {
 
 Banner.prototype.loadImage = function (slide) {
     var that = this,
+        animation = slide.animation,
         image = new Image();
 
     image.onload = function () {
         slide.image = this;
-        slide.width = this.width;
-        slide.height = this.height;
+        slide.corners = {
+            startX: animation.startX * (that.carouselWidth / animation.startScale - this.width),
+            startY: animation.startY * (that.carouselHeight / animation.startScale - this.height),
+            endX: animation.endX * (that.carouselWidth / animation.endScale - this.width),
+            endY: animation.endY * (that.carouselHeight / animation.endScale - this.height)
+        };
+
         if (that.movesCount) {  // show first frame immediately
             image.style.opacity = 0;
         }
@@ -217,9 +219,9 @@ Banner.prototype.loadImage = function (slide) {
 
     // Setup transition
     if (this.supportsCSS3) {
-        var animation = slide.animation,
-            transformCssStyle = this.transform.cssStyle,
+        var transformCssStyle = this.transform.cssStyle,
             transitionJsStyle = this.transition.jsStyle;
+
         image.style[transitionJsStyle] = transformCssStyle + ' ' + animation.duration + 'ms ' + this.options.ease3d + 
                                          ', opacity ' + this.options.fadeSpeed + 'ms';
     }
@@ -268,25 +270,6 @@ Banner.prototype.makeMove = function () {
 
 
 /**
- * Chooses random start corner and random end corner that is different from the start. 
- * This gives a random direction effect. Returns coordinates.
- */
-
-Banner.prototype.chooseCorner = function () {
-    var animation = this.slide.animation,
-        imageW = this.slide.width,
-        imageH = this.slide.height;
-
-    return {
-        startX: animation.startX * (this.carouselWidth - imageW) * animation.startScale,
-        startY: animation.startY * (this.carouselHeight - imageH) * animation.startScale,
-        endX: animation.endX * (this.carouselWidth - imageW) * animation.endScale,
-        endY: animation.endY * (this.carouselHeight - imageH) * animation.endScale
-    };
-};
-
-
-/**
  *  Hardware accelerated animation
  */
 
@@ -295,7 +278,7 @@ Banner.prototype.animateCSS3D = function () {
         image = this.slide.image,
         startScale = animation.startScale,
         endScale = animation.endScale,
-        position = this.chooseCorner(),
+        position = this.slide.corners,
         transformJsStyle = this.transform.jsStyle;
 
     // Set initial position
@@ -324,7 +307,7 @@ Banner.prototype.animateJQuery = function () {
         //endScale = animation.endScale,
         imageW = this.slide.width,
         imageH = this.slide.height,
-        position = this.chooseCorner(),
+        position = this.slide.corners,
         $image = $(image);
 
     // initial values

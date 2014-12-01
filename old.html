@@ -52,7 +52,7 @@ var imagesObj = {};
 var currentSlide = 0;
 
 function Plugin( element, options ) {
-this.carousel = element;
+this.wrapper = element;
 this.options = $.extend( {}, defaults, options) ;
 this._defaults = defaults;
 this._name = pluginName;
@@ -73,8 +73,8 @@ Plugin.prototype.init = function () {
 var list = this.options.images;
 var that = this;
 
-this.carouselWidth = $(this.carousel).carouselWidth();
-this.carouselHeight = $(this.carousel).carouselHeight();
+this.carouselWidth = $(this.wrapper).carouselWidth();
+this.carouselHeight = $(this.wrapper).carouselHeight();
 
 this.has3d = has3DTransforms();
 
@@ -88,7 +88,7 @@ for (i in list) {
 var loader = $('<div/>');
 loader.addClass('loader');
 loader.css({'position':'absolute','z-index':10000});
-$(this.carousel).prepend(loader);
+$(this.wrapper).prepend(loader);
 };
 
 
@@ -136,7 +136,7 @@ this.doTransition = (this.has3d)?this.transition3d:this.transition;
 
 //set up the image OBJ parameters - used to track loading and initial dimensions
 img.load(function() {
- imagesObj["image"+index].carousel = this;
+ imagesObj["image"+index].wrapper = this;
  imagesObj["image"+index].loaded  = true;
  imagesObj["image"+index].carouselWidth = $(this).carouselWidth();
  imagesObj["image"+index].carouselHeight = $(this).carouselHeight();
@@ -156,7 +156,7 @@ Plugin.prototype.resume = function(index){
 //first image has loaded
 if(index == 0) {
  this.startTransition(0);
- $(this.carousel).find('.loader').hidePreviousSlide();
+ $(this.wrapper).find('.loader').hidePreviousSlide();
 
 }
 
@@ -165,14 +165,14 @@ if(index == 0) {
 // it will then resume the transition.
 if(index == this.holdup) {
  $('#status').html("");
- $(this.carousel).find('.loader').hidePreviousSlide();
+ $(this.wrapper).find('.loader').hidePreviousSlide();
  this.startTransition(this.holdup);
 }
 
 //if the last image in the set has loaded, add the images in order
 if(this.checkLoadProgress() == true) {
  //reset the opacities and z indexes except the last and first images
- $(this.carousel).find('.stalled').each(function(){
+ $(this.wrapper).find('.stalled').each(function(){
      $(this).css({'opacity':1,'z-index':1});
      $(this).removeClass('stalled');
  });
@@ -201,9 +201,9 @@ return imagesLoaded;
 Plugin.prototype.wait = function() {
 clearInterval(this.interval);
 $('#status').html("loading");
-$(this.carousel).find('.loader').show();
+$(this.wrapper).find('.loader').show();
 
-var image = imagesObj["image"+(currentSlide-1)].carousel;
+var image = imagesObj["image"+(currentSlide-1)].wrapper;
 $(image).parent().stop(true,true);
 $(image).parent().addClass('stalled');
 }
@@ -325,7 +325,7 @@ Plugin.prototype.chooseCorner = function() {
 // }
 var scale = this.options.animation[currentSlide].startScale;
 var endScale = this.options.animation[currentSlide].endScale;
-var image = imagesObj["image"+currentSlide].carousel;
+var image = imagesObj["image"+currentSlide].wrapper;
 
 var width = 548;
 var height = 90;
@@ -333,8 +333,8 @@ var height = 90;
 start = this.options.animation[currentSlide].startPosition;
 end = this.options.animation[currentSlide].endPosition;
 
-var w = $(this.carousel).carouselWidth() - 180;
-var h = $(this.carousel).carouselHeight();
+var w = $(this.wrapper).carouselWidth() - 180;
+var h = $(this.wrapper).carouselHeight();
 
 var coordinates = [];
 
@@ -367,7 +367,7 @@ console.log("TRANSITION 3D")
 var that  = this;
 var scale = this.options.animation[currentSlide].startScale;
 var endScale = this.options.animation[currentSlide].endScale;
-var image = imagesObj["image"+currentSlide].carousel;
+var image = imagesObj["image"+currentSlide].wrapper;
 var position = this.chooseCorner();
 
 var score = this.options.animation[currentSlide].score;
@@ -421,7 +421,7 @@ console.log("TRANSITION");
 var that  = this;
 var scale = this.options.scale;
 var endScale = this.options.animation[currentSlide].endScale;
-var image = imagesObj["image"+currentSlide].carousel;
+var image = imagesObj["image"+currentSlide].wrapper;
 var sw = $(image).carouselWidth();
 var sh = $(image).carouselHeight();
 var position = this.chooseCorner();
@@ -440,7 +440,7 @@ setTimeout(function(){
 
 Plugin.prototype.transitionOut = function() {
 var that = this;
-var image = imagesObj["image"+currentSlide].carousel;
+var image = imagesObj["image"+currentSlide].wrapper;
 $(image).parent().delay(that.options.animation[currentSlide].showTime).animate({'opacity':0},that.options.fadeSpeed, function(){
  $(this).css({'z-index':1});
 });
@@ -487,13 +487,13 @@ return true;
 *  added to the DOM
 */
 Plugin.prototype.insertAt = function (index, element) {
-var lastIndex = $(this.carousel).children().size();
+var lastIndex = $(this.wrapper).children().size();
 if (index < 0) {
  index = Math.max(0, lastIndex + 1 + index);
 }
-var imgWrapper = $(this.carousel).append(element);
+var imgWrapper = $(this.wrapper).append(element);
 if (index < lastIndex) {
- $(this.carousel).children().eq(index).before($(this.carousel).children().last());
+ $(this.wrapper).children().eq(index).before($(this.wrapper).children().last());
 }
 }
 

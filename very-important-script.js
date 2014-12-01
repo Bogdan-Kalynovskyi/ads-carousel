@@ -170,29 +170,29 @@ $one = function (selector, root) {
  * Initial setup - dermines width, height, and adds the loading icon.
  */
 function Banner(element, options) {
-    this.carousel = element;
+    this.wrapper = element;
     this.options = utils.extend({}, this._defaults, options);
     
     var list = this.options.images;
     this.images2Load = this.maxSlides = list.length;
     this.images = [];
     this.currentSlide = 0;
-    this.carouselWidth = this.carousel.clientWidth;
-    this.carouselHeight = this.carousel.clientHeight;
+    this.carouselWidth = this.wrapper.clientWidth;
+    this.carouselHeight = this.wrapper.clientHeight;
     this.isWaiting = true;
     
     this.drawStuff();
     this.drawStars();
   
-    this.loader = $one('.loader', this.carousel);
-    this.status = $one('.status', this.carousel);
-    this.carousel = $one('.carousel', this.carousel);
+    this.loader = $one('.loader', this.wrapper);
+    this.status = $one('.status', this.wrapper);
+    this.wrapper = $one('.carousel', this.wrapper);
   
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < this.maxSlides; i++) {
         fragment.appendChild(this.loadImage(i, list[i].imageSrc));
     }
-    this.carousel.appendChild(fragment);
+    this.wrapper.appendChild(fragment);
 
     //CSS3 feature support is a critical part
     this.transition = utils.testCSSSupport('transition');
@@ -248,7 +248,7 @@ Banner.prototype.drawStuff = function () {
         '<div class=loader></div>' +
         '<div class=status></div>';
     
-    this.carousel.innerHTML = html;
+    this.wrapper.innerHTML = html;
 };
 
 
@@ -379,13 +379,13 @@ Banner.prototype.wait = function () {
 
 Banner.prototype.chooseCorner = function () {
     var animation = this.options.images[this.currentSlide].animation,
-        image = this.images[this.currentSlide].carousel,
+        image = this.images[this.currentSlide].wrapper,
         startScale = animation.startScale,
         endScale = animation.endScale,
         start = animation.startPosition,
         end = animation.endPosition,
-        w = this.carousel.clientWidth - 180,
-        h = this.carousel.clientHeight,
+        w = this.wrapper.clientWidth - 180,
+        h = this.wrapper.clientHeight,
         imw = image.carouselWidth,
         imh = image.carouselHeight;
 
@@ -406,7 +406,7 @@ Banner.prototype.animateCSS3D = function () {
     var that = this,
         currentSlide = this.currentSlide,
         animation = this.options.images[currentSlide].animation,
-        image = this.images[currentSlide].carousel,
+        image = this.images[currentSlide].wrapper,
         fadeSpeed = this.options.fadeSpeed,
         startScale = animation.startScale,
         endScale = animation.endScale,
@@ -446,7 +446,7 @@ Banner.prototype.animateCSS3D = function () {
 Banner.prototype.animateJQuery = function () {
     var currentSlide = this.currentSlide,
         animation = this.options.images[currentSlide].animation,
-        image = this.images[currentSlide].carousel,
+        image = this.images[currentSlide].wrapper,
         startScale = animation.startScale,
         endScale = animation.endScale,
         sw = image.carouselWidth,
@@ -492,7 +492,7 @@ Banner.prototype.onMove = function (index) {
     setTimeout(function () {
         that.options.onSlideComplete();
         setTimeout(function () {
-            var image = that.carousel.children[index];
+            var image = that.wrapper.children[index];
             image.className = 'hidden';
             if (!that.supportsCSS3) {
                 $(image).stop();
