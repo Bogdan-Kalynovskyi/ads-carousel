@@ -17,9 +17,9 @@
             {% endif %}
         }
         .carousel {
+            left: 180px;
             width: 548px;
             height: 90px;
-            margin-left: 180px;
         }
         .fixedContent {
             width: 400px;
@@ -56,7 +56,7 @@
         <div class=carousel></div>
         <div class=loader></div>
         <div class=fixedContent>
-            <a class=adLogo href=# target=_blank>
+            <a class=adLogo href= target=_blank>
                 <div class=logoBg>
                     <img src="{{ logo.rel_path }}">
                 </div>
@@ -85,7 +85,6 @@
                     },
                 {% endfor %}
             ],
-            rates: [5],
             fadeSpeed: 1200,
             pauseBetweenAnimations: 1500,
             ease3d: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)'
