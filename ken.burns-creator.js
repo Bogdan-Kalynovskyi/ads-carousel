@@ -129,7 +129,7 @@ var utils = {
  ------------------------------------------------------------------------------------------------- */
 
 function Banner(element, options) {
-    this.element = element;
+    this.carousel = element;
     this.options = options;
 this.drawStuff();
     var that = this,
@@ -141,13 +141,8 @@ this.drawStuff();
     this.slide = this.slides[0];
     this.previousSlide = null;
     this.movesCount = 0;
-    this.width = this.element.clientWidth;
-    this.height = this.element.clientHeight;
-    if (window.getComputedStyle) {
-        var computed = window.getComputedStyle(carousel);
-        this.width -= parseInt(computed.marginLeft);
-        this.height -= parseInt(computed.marginTop);
-    }
+    this.carouselWidth = this.carousel.clientWidth;
+    this.carouselHeight = this.carousel.clientHeight;
     this.isWaiting = true;
 
     //CSS3 feature support is a critical part
@@ -172,7 +167,7 @@ this.drawStuff();
 
 
 Banner.prototype.$ = function (selector) {
-    return this.element.querySelector(selector);
+    return this.carousel.querySelector(selector);
 };
 
 
@@ -283,10 +278,10 @@ Banner.prototype.chooseCorner = function () {
         imageH = this.slide.height;
 
     return {
-        startX: animation.startX * (this.width - imageW) * animation.startScale,
-        startY: animation.startY * (this.height - imageH) * animation.startScale,
-        endX: animation.endX * (this.width - imageW) * animation.endScale,
-        endY: animation.endY * (this.height - imageH) * animation.endScale
+        startX: animation.startX * (this.carouselWidth - imageW) * animation.startScale,
+        startY: animation.startY * (this.carouselHeight - imageH) * animation.startScale,
+        endX: animation.endX * (this.carouselWidth - imageW) * animation.endScale,
+        endY: animation.endY * (this.carouselHeight - imageH) * animation.endScale
     };
 };
 

@@ -170,23 +170,23 @@ $one = function (selector, root) {
  * Initial setup - dermines width, height, and adds the loading icon.
  */
 function Banner(element, options) {
-    this.element = element;
+    this.carousel = element;
     this.options = utils.extend({}, this._defaults, options);
     
     var list = this.options.images;
     this.images2Load = this.maxSlides = list.length;
     this.images = [];
     this.currentSlide = 0;
-    this.width = this.element.clientWidth;
-    this.height = this.element.clientHeight;
+    this.carouselWidth = this.carousel.clientWidth;
+    this.carouselHeight = this.carousel.clientHeight;
     this.isWaiting = true;
     
     this.drawStuff();
     this.drawStars();
   
-    this.loader = $one('.loader', this.element);
-    this.status = $one('.status', this.element);
-    this.carousel = $one('.carousel', this.element);
+    this.loader = $one('.loader', this.carousel);
+    this.status = $one('.status', this.carousel);
+    this.carousel = $one('.carousel', this.carousel);
   
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < this.maxSlides; i++) {
@@ -248,7 +248,7 @@ Banner.prototype.drawStuff = function () {
         '<div class=loader></div>' +
         '<div class=status></div>';
     
-    this.element.innerHTML = html;
+    this.carousel.innerHTML = html;
 };
 
 
@@ -262,7 +262,7 @@ Banner.prototype.drawStars = function () {
         star = stars[i];
         utils.addClass(star, 'star-on');
         if (i === rate) {
-            star.style.width = rateSub + 'em';
+            star.style.carouselWidth = rateSub + 'em';
             star.style.marginRight = (1 - rateSub) + 'em';
         }
     }
@@ -300,8 +300,8 @@ Banner.prototype.loadImage = function (index, src) {
     img.onload = function () {
         that.images[index] = {
             element: this,
-            width: this.width,
-            height: this.height
+            width: this.carouselWidth,
+            height: this.carouselHeight
         };
 
         that.images2Load--;
@@ -379,15 +379,15 @@ Banner.prototype.wait = function () {
 
 Banner.prototype.chooseCorner = function () {
     var animation = this.options.images[this.currentSlide].animation,
-        image = this.images[this.currentSlide].element,
+        image = this.images[this.currentSlide].carousel,
         startScale = animation.startScale,
         endScale = animation.endScale,
         start = animation.startPosition,
         end = animation.endPosition,
-        w = this.element.clientWidth - 180,
-        h = this.element.clientHeight,
-        imw = image.width,
-        imh = image.height;
+        w = this.carousel.clientWidth - 180,
+        h = this.carousel.clientHeight,
+        imw = image.carouselWidth,
+        imh = image.carouselHeight;
 
     return {
         startX: start.x * (w / startScale - imw),
@@ -406,7 +406,7 @@ Banner.prototype.animateCSS3D = function () {
     var that = this,
         currentSlide = this.currentSlide,
         animation = this.options.images[currentSlide].animation,
-        image = this.images[currentSlide].element,
+        image = this.images[currentSlide].carousel,
         fadeSpeed = this.options.fadeSpeed,
         startScale = animation.startScale,
         endScale = animation.endScale,
@@ -446,11 +446,11 @@ Banner.prototype.animateCSS3D = function () {
 Banner.prototype.animateJQuery = function () {
     var currentSlide = this.currentSlide,
         animation = this.options.images[currentSlide].animation,
-        image = this.images[currentSlide].element,
+        image = this.images[currentSlide].carousel,
         startScale = animation.startScale,
         endScale = animation.endScale,
-        sw = image.width,
-        sh = image.height,
+        sw = image.carouselWidth,
+        sh = image.carouselHeight,
         position = this.chooseCorner(),
         $image = $(image);
 
@@ -458,8 +458,8 @@ Banner.prototype.animateJQuery = function () {
     $image.css({
         left: position.startX,
         top: position.startY,
-        width: sw * startScale,
-        height: sh * startScale
+        carouselWidth: sw * startScale,
+        carouselHeight: sh * startScale
     });
     
     // Bring to front
@@ -469,8 +469,8 @@ Banner.prototype.animateJQuery = function () {
     $image.animate({
         left: position.endX,
         top: position.endY,
-        width: sw * endScale,
-        height: sh * endScale
+        carouselWidth: sw * endScale,
+        carouselHeight: sh * endScale
     },  { 
         duration: animation.duration, 
         queue: false 
