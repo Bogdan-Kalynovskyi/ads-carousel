@@ -131,7 +131,7 @@ var utils = {
 function Banner(element, options) {
     this.element = element;
     this.options = options;
-this.drawStuff();
+
     var that = this,
         carousel = this.$('.carousel'),
         fragment = document.createDocumentFragment();
