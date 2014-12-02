@@ -48,18 +48,18 @@
             border:1px solid #ccc;
             font-family: Helvetica, Arial, sans-serif;
             display: inline-block;
-            {% if background_color %}    
-              background-color:{{background_color.rgb}};
-            {% else %}
-              background-color:white;
-            {% endif %}
-            {% if foreground_color %}    
-              color:{{foreground_color.rgb}};
-            {% else %}
-              color:black;
-            {% endif %}
+        {% if background_color %}
+        background:{{background_color.rgb}};
+        {% else %}
+        background:white;
+        {% endif %}
+        {% if foreground_color %}
+        color:{{foreground_color.rgb}};
+        {% else %}
+        color:black;
+        {% endif %}
         }
-        
+
         .content-container {
             padding: 7px 12px;
         }
@@ -76,44 +76,46 @@
             padding: 10px 24px;
             font-weight: bold;
             display: inline-block;
-            {% if call_to_action.background_color %}    
-              background-color:{{call_to_action.background_color.rgb}};
-            {% else %}
-              background-color:red;
-            {% endif %}
-            {% if call_to_action.foreground_color %}    
-              color:{{call_to_action.foreground_color.rgb}};
-            {% else %}
-              color:white;
-            {% endif %}
+            background: #ffd65e;
+            background: -webkit-linear-gradient(top,  #ffd65e 0%,#febf04 100%);
+            background: linear-gradient(to bottom,  #ffd65e 0%,#febf04 100%);
+
+            text-shadow: rgba(255, 255, 255, 1) 0 0 4px, rgba(0, 0, 0, 1) 0 0 1px;
+            margin-left: 13px;
+        {% if call_to_action.foreground_color %}
+        color:{{call_to_action.foreground_color.rgb}};
+        {% else %}
+        color:white;
+        {% endif %}
         }
 
         .ad-wrapper h1 {
             font-size:18px;
             line-height: 1.3;
-            {% if foreground_color %}    
-              color:{{foreground_color.rgb}};
-            {% else %}
-              color:black;
-            {% endif %}
+        {% if foreground_color %}
+        color:{{foreground_color.rgb}};
+        {% else %}
+        color:black;
+        {% endif %}
         }
-        
+
         p.desc_1 {
             line-height: 18px;
-            {% if foreground_color %}    
-              color:{{foreground_color.rgb}};
-            {% else %}
-              color:black;
-            {% endif %}
+        {% if foreground_color %}
+        color:{{foreground_color.rgb}};
+        {% else %}
+        color:black;
+        {% endif %}
         }
-    
+
         .logo-container {
             width:100%;
             height:65px;
+            background:url('{{logo.rel_path}}') center center no-repeat;
             background-size:auto auto;
-            background: {{logo.background_color}} url('{{logo.rel_path}}') center center no-repeat;
+        background-color: {{logo.background_color}};
         }
-        
+
         .image.flexible {
             width:45%;
             height:165px;
@@ -135,7 +137,7 @@
             <h1>{{ headline.text }}</h1>
 
             {% if description_1 %}
-                <p class="desc_1">{{ description_1.text }}</p>
+            <p class="desc_1">{{ description_1.text }}</p>
             {% endif %}
         </div>
 
@@ -148,22 +150,22 @@
 <script>
     (function(){
         var els = document.querySelectorAll('.descriptions h1'),
-            length = els.length;
-    
+                length = els.length;
+
         while (length--) {
             var el = els[length];
             el.style.fontSize = (el.innerHTML.length > 25) ? '16px' : '18px';
         }
-    
+
         var regularFontSize = 13;
         var smallFontSize = 10;
-    
+
         var buttons = document.querySelectorAll('.button'),
-            buttonsLength = buttons.length;
+                buttonsLength = buttons.length;
         while (buttonsLength--) {
             var button = buttons[buttonsLength];
             var width = button.offsetWidth;
-    
+
             if (width > 200) {
                 button.style.fontSize = smallFontSize + 'px';
             }
@@ -174,5 +176,4 @@
     })();
 </script>
 </body>
-
 </html>
