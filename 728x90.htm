@@ -34,10 +34,13 @@
             vertical-align: middle; 
             width: 180px;
             height: 90px;
-            background-color: {{ logo.background_color }};
+            background: {{ logo.background_color }} url({{ logo.rel_path }}) 50% 50% no-repeat;
         }
-        .logoBg > img {
-            max-width: 150px; 
+        .headline {
+            display: inline-block;
+            text-shadow: rgba(0,0,0,0.8) 1px 1px 3px, black 1px 1px 1px, rgba(52,52,52,0.5) 0 0 3px;
+            color: white;
+            margin: 5px;
         }
         
         .action {
@@ -55,11 +58,10 @@
         <div class=carousel></div>
         <div class=loader></div>
         <div class=fixedContent>
-            <a class=adLogo href= target=_blank>
-                <div class=logoBg>
-                    <img src="{{ logo.rel_path }}">
-                </div>
+            <a class=adLogo href=# target=_blank>
+                <div class=logoBg></div>
             </a>
+            <div class=headline>{{ headline.text }}</div>
         </div>
         <a class=action href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
     </div>

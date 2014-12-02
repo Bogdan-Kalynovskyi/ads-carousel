@@ -30,10 +30,7 @@
             vertical-align: middle;
             width: 300px;
             height: 70px;
-            background-color: {{ logo.background_color }};
-        }
-        .logoBg > img {
-            max-width: 130px;
+            background: {{ logo.background_color }} url({{ logo.rel_path }}) 50% 50% no-repeat;
         }
         .headline {
             display: inline-block;
@@ -58,9 +55,7 @@
         <div class=loader></div>
         <div class=fixedContent>
             <a class=adLogo href=# target=_blank>
-                <div class=logoBg>
-                    <img src="{{ logo.rel_path }}">
-                </div>
+                <div class=logoBg></div>
             </a>
             <div class=headline>{{ headline.text }}</div>
         </div>
