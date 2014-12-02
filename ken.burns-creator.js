@@ -146,7 +146,6 @@ function Banner(element, options) {
     this.loader = this.wrapper.querySelector('.loader');
     this.isWaiting = true;
 
-    //CSS3 feature support is a critical part
     this.transform = utils.testCSSSupport('transform');
     if (this.transform) {
         this.transition = utils.testCSSSupport('transition', this.transform.cssStyle);
