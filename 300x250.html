@@ -40,53 +40,13 @@
         }
 
         .action {
-            position: absolute;
-            z-index: 10000;
-            text-align: center;
-            bottom: 10px;
-            right: 10px;
-            margin: 0;
-            border-radius: 6px;
-            font-weight: normal;
-            font-size: 16px;
-            font-family: Georgia, serif;
-            line-height: 20px;
-            border-top: 1px solid #fafafa;
-            padding: 9.5px 19px;
-            color: {{ call_to_action.foreground_color.rgb }};
-            text-transform: capitalize;
-            text-decoration: none;
-
-
-            background: {{ call_to_action.background_color.rgb }};
-            background: -webkit-gradient(linear, left top, left bottom, from({{ call_to_action.background_color.rgb }}), to(#cfcfcf));
-            background: -webkit-linear-gradient(top, {{ call_to_action.background_color.rgb }}, #cfcfcf);
-            background: -moz-linear-gradient(top, {{ call_to_action.background_color.rgb }}, #cfcfcf);
-            background: -ms-linear-gradient(top, {{ call_to_action.background_color.rgb }}, #cfcfcf);
-            background: -o-linear-gradient(top, {{ call_to_action.background_color.rgb }}, #cfcfcf);
-            -webkit-border-radius: 9px;
-            -moz-border-radius: 9px;
-
-            -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
-            -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
-            box-shadow: rgba(0,0,0,1) 0 1px 0;
-            text-shadow: rgba(0,0,0,.4) 0 1px 0;
-            vertical-align: middle;
-
-
+            {% if call_to_action.background_color %}
+              background-color: {{ call_to_action.background_color.rgb }};
+            {% endif %}
+            {% if call_to_action.foreground_color %}
+              color: {{ call_to_action.foreground_color.rgb }};
+            {% endif %}
         }
-
-        .action:hover {
-            border-top-color: #707070;
-            background: #707070;
-            color: #ccc;
-        }
-
-        .action:active {
-            border-top-color: #5e5e5e;
-            background: #5e5e5e;
-        }
-
     </style>
 </head>
 <body>
