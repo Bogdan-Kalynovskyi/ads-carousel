@@ -9,7 +9,7 @@
             width: 160px;
             height: 600px;
             {% if background_color %}
-              background-color:{{background_color.rgb}};
+              background:{{background_color.rgb}};
             {% endif %}
             {% if foreground_color %}    
               color:{{foreground_color.rgb}};
@@ -20,12 +20,12 @@
             width: 160px;
             height: 500px;
         }
-        .adLogo {
+        .logoLink {
             float: left; 
             width: 160px; 
             height: 100px;
         }
-        .logoBg {
+        .logo {
             display: table-cell;
             text-align: center;
             vertical-align: middle; 
@@ -33,43 +33,19 @@
             height: 100px;
             background: {{ logo.background_color }} url({{ logo.rel_path }}) 50% 50% no-repeat;
         }
-        .logoBg > img {
-            max-width: 130px;
-        }
         .headline {
-            display: inline-block; 
-            text-shadow: rgba(0,0,0,0.8) 1px 1px 3px, black 1px 1px 1px, rgba(52,52,52,0.5) 0 0 3px; 
+            font-family: 'tahoma', 'verdana', arial, Helvetica, sans-serif;
+            text-shadow: rgba(0,0,0,0.8) 1px 1px 3px, black 1px 1px 1px, rgba(52,52,52,0.5) 0 0 3px;
             color: white;
             margin: 5px;
         }
-
         .action {
-            position: absolute;
-            z-index: 10000;
-            text-align: center;
-            bottom: 10px;
-            right: 10px;
-            margin: 0;
-            border-radius: 6px;
-            text-shadow: rgba(0, 0, 0, .9) 0 0 1px;
-            font-weight: normal;
-            font-size: 18px;
-            font-family: 'tahoma', 'verdana', arial, Helvetica, sans-serif;
-            line-height: 20px;
-            border: 2px solid #ed9300;
-            padding: 3px 10px 3px 20px;
-            color: white;
-            box-shadow: 0 0 4px rgba(0, 0, 0, .6);
-            text-transform: capitalize;
-            text-decoration: none;
-            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAAGzs1ytAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2OUUyN0IwQTAxMUExMUUzODFEQkZDRjZBMTdGQzIwMyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2OUUyN0IwQjAxMUExMUUzODFEQkZDRjZBMTdGQzIwMyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjY5RTI3QjA4MDExQTExRTM4MURCRkNGNkExN0ZDMjAzIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjY5RTI3QjA5MDExQTExRTM4MURCRkNGNkExN0ZDMjAzIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+ftC3EQAAAWBJREFUeNpi/P//PwMMMEHp/8gcMAAIIEZsylwgioEyQCwMogECCEUZMkA2LBVqAyuGwcgAIICwSjDhM9saai4jsrNAGAScwcZBBbiBOBqmAKtFAAGE01mEPAcCklCHRMMdgwyQHAbCIJti/yOAHVSMAdnBMByNpNAbiAWR5bG5mReI2YD4HSxWYQAggCjyIO0UX4a6k4OYJPET6rnfQMwDxL/wmcwHDQVQqnsKS324FINM5oSyPwCxIL4YhIH3QKwCxCzI8uiKDwDxPyBWB2JWNDkMDzIDsSgQv4c6ifwkChBgJCmmWWxT02BQlBwG4jxoXDISbTJ6qCPhBf8xgR8QsyNnSlwYnyQoTQRiMfwzEFsDMRs+CxgI2MwIdeFaLBYsAWIBIGYmx+BoLAY+BWIXIFYCYn5yDJ6LZuB3IA4CYlUgFkLPPoRyCHqKAeXyJUC8G4h3QHP8R2gR8X94ZRAAlSVgUcUVa3EAAAAASUVORK5CYII=) no-repeat 0 53%, linear-gradient(to bottom, #ffa84c 0%,#ff7b0d 100%)!important;
-
-        }
-
-        .action:hover {
-            box-shadow: 0 0 4px rgba(0, 0, 0, .7);
-            text-shadow: rgba(255, 255, 255, 1) 0 0 3px, rgba(0, 0, 0, 0.5) 0 0 1px;
-            color: black;
+            {% if call_to_action.background_color %}
+              background: {{ call_to_action.background_color.rgb }};
+            {% endif %}
+            {% if call_to_action.foreground_color %}
+              color: {{ call_to_action.foreground_color.rgb }};
+            {% endif %}
         }
     </style>
 </head>
@@ -78,8 +54,8 @@
         <div class=carousel></div>
         <div class=loader></div>
         <div class=fixedContent>
-            <a class=adLogo href=# target=_blank>
-                <div class=logoBg></div>
+            <a class=logoLink href=# target=_blank>
+                <div class=logo></div>
             </a>
             <div class=headline>{{ headline.text }}</div>
         </div>

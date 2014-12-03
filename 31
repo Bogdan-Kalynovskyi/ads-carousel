@@ -437,7 +437,7 @@ $.fn[pluginName] = function ( options ) {
 
 $(document).ready(function(){
     <!-- Add the Logo Image -->
-    var $logo = $('<a class="adLogo" href="' + templateData.logoAction + '" style="float: left; height: 70px" target="blank">' +
+    var $logo = $('<a class="logoLink" href="' + templateData.logoAction + '" style="float: left; height: 70px" target="blank">' +
             '<div style="background: ' + templateData.logoBackground + '; display: table-cell; text-align: center; vertical-align: middle; width: 300px; height: 70px;">' +
             '<img src="' + templateData.logoImg+ '" style="max-width: 130px; background: transparent;">' +
             '</div>' +

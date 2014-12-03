@@ -437,7 +437,7 @@ $.fn[pluginName] = function ( options ) {
 
 $(document).ready(function(){
     <!-- Add the Logo Image -->
-    var $logo = $('<a class="adLogo" href="' + jsonData.logoAction + '" style="float: left; width: 160px; height: 100px" target="blank">' +
+    var $logo = $('<a class="logoLink" href="' + jsonData.logoAction + '" style="float: left; width: 160px; height: 100px" target="blank">' +
             '<div style="background: ' + jsonData.logoBackground + '; display: table-cell; text-align: center; vertical-align: middle; width: 160px; height: 100px;">' +
             '<img src="' + jsonData.logoImg+ '" style="max-width: 130px; background: transparent;">' +
             '</div>' +

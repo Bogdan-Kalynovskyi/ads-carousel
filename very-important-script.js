@@ -226,7 +226,7 @@ Banner.prototype._defaults = {
 Banner.prototype.drawStuff = function () {
     var html = 
         '<div class=fixedContent>' +
-            '<a class=adLogo href="' + this.options.logoAction + '" target=_blank>' +
+            '<a class=logoLink href="' + this.options.logoAction + '" target=_blank>' +
                 '<div class=middle style="background: ' + this.options.logoBackground + '">' +
                     '<img src="' + this.options.logoImg + '">' +
                 '</div>' +

@@ -10,12 +10,12 @@
 .fixedContent {
     width: 400px;
 }
-.adLogo {
+.logoLink {
     float: left; 
     width: 180px;
     height: 90px;
 }
-.logoBg {
+.logo {
     display: table-cell;
     text-align: center;
     vertical-align: middle; 

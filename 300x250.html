@@ -9,7 +9,7 @@
             width: 300px;
             height: 250px;
             {% if background_color %}
-              background-color:{{background_color.rgb}};
+              background:{{background_color.rgb}};
             {% endif %}
             {% if foreground_color %}    
               color:{{foreground_color.rgb}};
@@ -20,11 +20,11 @@
             width: 300px;
             height: 180px;
         }
-        .adLogo {
+        .logoLink {
             float: left;
             height: 70px;
         }
-        .logoBg {
+        .logo {
             display: table-cell;
             text-align: center;
             vertical-align: middle;
@@ -33,15 +33,14 @@
             background: {{ logo.background_color }} url({{ logo.rel_path }}) 50% 50% no-repeat;
         }
         .headline {
-            display: inline-block;
+            font-family: 'tahoma', 'verdana', arial, Helvetica, sans-serif;
             text-shadow: rgba(0,0,0,0.8) 1px 1px 3px, black 1px 1px 1px, rgba(52,52,52,0.5) 0 0 3px;
             color: white;
             margin: 5px;
         }
-
         .action {
             {% if call_to_action.background_color %}
-              background-color: {{ call_to_action.background_color.rgb }};
+              background: {{ call_to_action.background_color.rgb }};
             {% endif %}
             {% if call_to_action.foreground_color %}
               color: {{ call_to_action.foreground_color.rgb }};
@@ -54,8 +53,8 @@
         <div class=carousel></div>
         <div class=loader></div>
         <div class=fixedContent>
-            <a class=adLogo href=# target=_blank>
-                <div class=logoBg></div>
+            <a class=logoLink href=# target=_blank>
+                <div class=logo></div>
             </a>
             <div class=headline>{{ headline.text }}</div>
         </div>
