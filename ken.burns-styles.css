@@ -16,12 +16,6 @@ a img {
     z-index: 1;
 }
 
-.loader {
-    position: absolute;
-    /* loader should be visible initially, because pictures are loaded via JS */
-    /* TODO: loader image! */
-}
-
 .carousel > img {
     position: absolute;
     left: 0;

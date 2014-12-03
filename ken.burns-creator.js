@@ -147,7 +147,6 @@ function Banner(element, options) {
     this.movesCount = 0;
     this.carouselWidth = carousel.clientWidth;
     this.carouselHeight = carousel.clientHeight;
-    this.loader = this.wrapper.querySelector('.loader');
     this.isWaiting = true;
 
     this.transform = utils.testCSSSupport('transform');
@@ -161,6 +160,8 @@ function Banner(element, options) {
     }
     carousel.appendChild(fragment);
     
+    this.adjustButtonWidth();
+    
     //Use jQuery animation as a fallback to CSS3 animation
     if (!this.supportsCSS3 && typeof jQuery === 'undefined') {
         utils.loadScript('//code.jquery.com/jquery-1.11.1.min.js', function () {
@@ -170,19 +171,23 @@ function Banner(element, options) {
 }
 
 
-Banner.prototype.lockAnimation = function () {
-    if (!this.isWaiting) {
-        this.loader.style.display = '';
-        this.isWaiting = true;
+Banner.prototype.adjustButtonWidth = function () {
+    var button = this.wrapper.querySelector('.action'),
+        height = button.offsetHeight;
+    
+    if (height > 30) {
+        button.style.fontSize = 15 + 'px';
     }
 };
 
 
+Banner.prototype.lockAnimation = function () {
+    this.isWaiting = true;
+};
+
+
 Banner.prototype.unlockAnimation = function () {
-    if (this.isWaiting) {
-        this.loader.style.display = 'none';
-        this.isWaiting = false;
-    }
+    this.isWaiting = false;
 };
 
 
@@ -210,20 +215,23 @@ Banner.prototype.loadImage = function (slide) {
         }
         that.tryToPlay();
     };
+
     
     image.onerror = function() {
         that.slides.splice(that.slides.indexOf(slide),  1);
         if (that.slide === slide) {
-            that.index = 0;
-            that.slide = that.slides[0];
-        }
-        
+            that.index++;
+            if (that.index === that.slides.length) {
+                that.index = 0;
+            }
+            that.slide = that.slides[that.index];
+        }    
         that.tryToPlay();
-        throw "could not load image " + slide.imageSrc; 
     };
+    
  
-    image.src = slide.imageSrc;
     image.className = 'hidden';
+    image.src = slide.imageSrc;
 
     // Setup transition
     if (this.supportsCSS3) {
@@ -262,7 +270,6 @@ Banner.prototype.makeMove = function () {
         this.hidePreviousSlide();
         this.scheduleNextMove();
     
-        // advance the current slide
         this.previousSlide = this.slide;
         this.index++;
         if (this.index === this.slides.length) {
