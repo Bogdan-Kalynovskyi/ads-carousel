@@ -201,7 +201,12 @@ Banner.prototype.loadImage = function (slide) {
         };
 
         if (that.movesCount) {  // show first frame immediately
-            image.style.opacity = 0;
+            if (that.supportsCSS3) {
+                image.style.opacity = 0;
+            }
+            else {
+                $(image).css({opacity: 0});
+            }
         }
         that.tryToPlay();
     };
@@ -324,7 +329,7 @@ Banner.prototype.animateJQuery = function () {
     // Bring to front
     image.className = '';
     image.style.zIndex = this.movesCount;
-/*    
+/*
     // fire animation
     $image.animate({
         left: position.endX,
@@ -363,11 +368,13 @@ Banner.prototype.hidePreviousSlide = function () {
 
         setTimeout(function () {
             image.className = 'hidden';
-            if (!that.supportsCSS3) {
-                $(image).stop();
-            }
             setTimeout(function () {
-                image.style.opacity = 0;
+                if (that.supportsCSS3) {
+                    image.style.opacity = 0;
+                }
+                else {
+                    $(image).css({opacity: 0});
+                }
             }, 140);
         }, this.options.fadeSpeed);
     }
