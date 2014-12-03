@@ -137,6 +137,10 @@ function Banner(element, options) {
         fragment = document.createDocumentFragment();
 
     this.slides = this.options.slides;
+    // BUGFIX for IE8. Because we have trailing comma in array initialization by literal, like this: [1,2,3,4,].length === 5
+    if (this.slides[this.slides.length - 1] === undefined) {
+        this.slides.pop();
+    }
     this.index = 0;
     this.slide = this.slides[0];
     this.previousSlide = null;
