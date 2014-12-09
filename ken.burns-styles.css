@@ -5,7 +5,7 @@ a img {
 #wrapper {
     position: relative;
     overflow: hidden;
-    font-family: 'tahoma', 'verdana', arial, Helvetica, sans-serif;
+    font-family: 'Tahoma', 'Verdana', Arial, Helvetica, sans-serif;
 }
 
 .fixedContent,
@@ -47,4 +47,8 @@ a img {
     color: white;
     box-shadow: 1px 1px 3px rgba(0,0,0, .5);
     text-decoration: none;
+}
+
+.action:hover {
+    opacity: .9;
 }
