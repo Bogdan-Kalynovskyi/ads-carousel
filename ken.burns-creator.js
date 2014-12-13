@@ -2,6 +2,18 @@
  * Here we have all we need from jQuery. And even more: modernizr,
  */
 var utils = {
+    extend: function (destination) {
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var k in source) {
+                if (source.hasOwnProperty(k)) {
+                    destination[k] = source[k];
+                }
+            }
+        }
+        return destination;
+    },
+
     domReady: function (callback) {
         // Mozilla, Opera and Webkit
         if (document.addEventListener) {
@@ -97,6 +109,34 @@ var utils = {
         return false;
     },
 
+    /* https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API */
+    pageVisibility: function (callback) {
+        var hidden,
+            visibilityChange;
+        if (document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support 
+            hidden = "hidden";
+            visibilityChange = "visibilitychange";
+        } else if (document.mozHidden !== undefined) {
+            hidden = "mozHidden";
+            visibilityChange = "mozvisibilitychange";
+        } else if (document.msHidden !== undefined) {
+            hidden = "msHidden";
+            visibilityChange = "msvisibilitychange";
+        } else if (document.webkitHidden !== undefined) {
+            hidden = "webkitHidden";
+            visibilityChange = "webkitvisibilitychange";
+        }
+        if (document.addEventListener !== undefined && hidden !== undefined) {
+            document.addEventListener(visibilityChange, function () {
+                callback(!document[hidden]);
+            }, false);
+            
+            return !document[hidden];
+        }
+        
+        return true;
+    },
+
     /**
      * Asynchronously load js file
      * and fire callback when completed.
@@ -132,56 +172,71 @@ function Banner(element, options) {
     this.wrapper = element;
     this.options = options;
 
-    var that = this,
-        carousel = this.wrapper.querySelector('.carousel'),
-        fragment = document.createDocumentFragment();
-
     this.slides = this.options.slides;
     // BUGFIX for IE8. Because we have trailing comma in array initialization by literal, like this: [1,2,3,4,].length === 5
     if (this.slides[this.slides.length - 1] === undefined) {
         this.slides.pop();
     }
+    // Corner case for one slide only. Just clone the only slide instead of updating the code
+    if (this.slides.length === 1) {
+        this.slides.push(utils.extend({}, this.slides[0]));
+    }
     this.index = 0;
     this.slide = this.slides[0];
     this.previousSlide = null;
     this.movesCount = 0;
-    this.carouselWidth = carousel.clientWidth;
-    this.carouselHeight = carousel.clientHeight;
-    this.loader = this.wrapper.querySelector('.loader');
-    this.isWaiting = true;
+    this.isPlaying = false;
 
     this.transform = utils.testCSSSupport('transform');
     if (this.transform) {
         this.transition = utils.testCSSSupport('transition', this.transform.cssStyle);
     }
     this.supportsCSS3 = this.transition && this.transform;
-  
+    
+    this.initDOM();
+}
+
+
+Banner.prototype.initDOM = function () {
+    var that = this,
+        carousel = this.wrapper.querySelector('.carousel'),
+        fragment = document.createDocumentFragment();
+
+    this.carouselWidth = carousel.clientWidth;
+    this.carouselHeight = carousel.clientHeight;
+
     for (var i = 0, len = this.slides.length; i < len; i++) {
         fragment.appendChild(this.loadImage(this.slides[i]));
     }
     carousel.appendChild(fragment);
-    
-    //Use jQuery animation as a fallback to CSS3 animation
+
+    this.adjustButtonWidth();
+
+    //load jQuery to use animation as a fallback to CSS3 transitions
     if (!this.supportsCSS3 && typeof jQuery === 'undefined') {
         utils.loadScript('//code.jquery.com/jquery-1.11.1.min.js', function () {
             that.tryToPlay();  //start playing only when jQuery is loaded
         });
     }
-}
-
-
-Banner.prototype.lockAnimation = function () {
-    if (!this.isWaiting) {
-        this.loader.style.display = '';
-        this.isWaiting = true;
-    }
+    
+    this.isVisible = utils.pageVisibility(function (visible) {
+        that.isVisible = visible;
+        if (visible) {
+            that.tryToPlay();
+        }
+        else {
+            that.pausePlaying();
+        }
+    });
 };
 
 
-Banner.prototype.unlockAnimation = function () {
-    if (this.isWaiting) {
-        this.loader.style.display = 'none';
-        this.isWaiting = false;
+Banner.prototype.adjustButtonWidth = function () {
+    var button = this.wrapper.querySelector('.action'),
+        height = button.offsetHeight;
+    
+    if (height > 30) {
+        button.style.fontSize = 15 + 'px';
     }
 };
 
@@ -210,20 +265,23 @@ Banner.prototype.loadImage = function (slide) {
         }
         that.tryToPlay();
     };
+
     
     image.onerror = function() {
         that.slides.splice(that.slides.indexOf(slide),  1);
         if (that.slide === slide) {
-            that.index = 0;
-            that.slide = that.slides[0];
-        }
-        
+            that.index++;
+            if (that.index >= that.slides.length) {
+                that.index = 0;
+            }
+            that.slide = that.slides[that.index];
+        }    
         that.tryToPlay();
-        throw "could not load image " + slide.imageSrc; 
     };
+    
  
-    image.src = slide.imageSrc;
     image.className = 'hidden';
+    image.src = slide.imageSrc;
 
     // Setup transition
     if (this.supportsCSS3) {
@@ -239,9 +297,15 @@ Banner.prototype.loadImage = function (slide) {
 
 
 Banner.prototype.tryToPlay = function () {
-    if (this.isWaiting && this.slides.length > 1) {
+    if (this.isVisible && !this.isPlaying && this.slides.length > 1) {
         this.makeMove();    
     }
+};
+
+
+Banner.prototype.pausePlaying = function () {
+    clearTimeout(this.nextMoveTimeout);
+    this.isPlaying = false;
 };
 
 
@@ -250,7 +314,7 @@ Banner.prototype.makeMove = function () {
     if (this.slide.image && (this.supportsCSS3 || typeof jQuery !== 'undefined')) {
 
         this.movesCount++;
-        this.unlockAnimation();
+        this.isPlaying = true;
        
         if (this.supportsCSS3) {
             this.animateCSS3D();
@@ -262,17 +326,16 @@ Banner.prototype.makeMove = function () {
         this.hidePreviousSlide();
         this.scheduleNextMove();
     
-        // advance the current slide
         this.previousSlide = this.slide;
         this.index++;
-        if (this.index === this.slides.length) {
+        if (this.index >= this.slides.length) {
             this.index = 0;
         }
         this.slide = this.slides[this.index];
     }
     // otherwise turn on waiting mode
     else {
-        this.lockAnimation();
+        this.pausePlaying();
     }
 };
 
@@ -300,7 +363,7 @@ Banner.prototype.animateCSS3D = function () {
     setTimeout(function() {
         image.style.opacity = 1;
         image.style[transformJsStyle] = 'scale(' + endScale + ') translate3d(' + position.endX + 'px,' + position.endY + 'px, 0)';
-    }, 140);
+    }, 160);
 };
 
 
@@ -353,7 +416,7 @@ Banner.prototype.animateJQuery = function () {
 Banner.prototype.scheduleNextMove = function () {
     var that = this;
     
-    setTimeout(function () {
+    this.nextMoveTimeout = setTimeout(function () {
         that.options.onSlideComplete && that.options.onSlideComplete();
         that.makeMove();
     }, this.slide.animation.duration + this.options.pauseBetweenAnimations);
@@ -368,14 +431,12 @@ Banner.prototype.hidePreviousSlide = function () {
 
         setTimeout(function () {
             image.className = 'hidden';
-            setTimeout(function () {
-                if (that.supportsCSS3) {
-                    image.style.opacity = 0;
-                }
-                else {
-                    $(image).css({opacity: 0});
-                }
-            }, 140);
+            if (that.supportsCSS3) {
+                image.style.opacity = 0;
+            }
+            else {
+                $(image).css({opacity: 0});
+            }
         }, this.options.fadeSpeed);
     }
 };

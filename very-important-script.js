@@ -41,7 +41,7 @@ var utils = {
             // If IE event model is used
         } else if (document.attachEvent) {
             document.attachEvent("onreadystatechange", function () {
-                if (document.readyState === "complete") {
+                if (document.readyState === "complete" ||) {
                     callback();
                 }
             });
@@ -179,7 +179,7 @@ function Banner(element, options) {
     this.currentSlide = 0;
     this.carouselWidth = this.wrapper.clientWidth;
     this.carouselHeight = this.wrapper.clientHeight;
-    this.isWaiting = true;
+    this.isPlaying = true;
     
     this.drawStuff();
     this.drawStars();
@@ -270,14 +270,14 @@ Banner.prototype.drawStars = function () {
 
 
 Banner.prototype.lockAnimation = function () {
-    this.isWaiting = true;
+    this.isPlaying = true;
     this.loader.style.display = '';
     this.status.innerHTML = 'Loading...';
 };
 
 
 Banner.prototype.lockAnimation = function () {
-    this.isWaiting = false;
+    this.isPlaying = false;
     this.loader.style.display = 'none';
     this.status.innerHTML = '';
 };
@@ -310,7 +310,7 @@ Banner.prototype.loadImage = function (index, src) {
             that.options.onLoadingComplete();
         }
 
-        if (that.isWaiting && (that.supportsCSS3 || that.jQueryLoaded)) {
+        if (that.isPlaying && (that.supportsCSS3 || that.jQueryLoaded)) {
             that.play();
         }
     };
