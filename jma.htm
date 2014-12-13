@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head lang=en>
+    <meta charset="UTF-8">
+    <title>JMB</title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
 
     <style>
-        div, span, h1, h2, h3, h6, p, pre,
-        a, strong, sub, sup, img, b, u, i,
+        div, span, h1, h2, h3, h4, h5, h6, p, pre,
+        a, strong, em, sub, sup, img, b, u, i,
         form, label, input, textarea, ol, ul, li {
             margin: 0;
             padding: 0;
@@ -28,6 +28,8 @@
         body, html {
             width: 300px;
             height: 250px;
+            margin: 0;
+            padding: 0;
         }
 
         .ad-wrapper {
@@ -39,14 +41,14 @@
             border:1px solid #ccc;
             font-family: Helvetica, Arial, sans-serif;
             {% if background_color %}
-              background:{{ background_color.rgb }};
+                background: {{ background_color.rgb }};
             {% else %}
-              background:white;
+                background: white;
             {% endif %}
             {% if foreground_color %}
-              color:{{ foreground_color.rgb }};
+                color: {{ foreground_color.rgb }};
             {% else %}
-              color:black;
+                color: black;
             {% endif %}
         }
 
@@ -57,14 +59,14 @@
         .logo {
             width:100%;
             height:65px;
-            background: {{ logo.background_color }} url('{{ logo.rel_path }}') center center no-repeat;
+            background: {{ logo.background_color }} url({{ logo.rel_path }}) center center no-repeat;
         }
 
         .image.flexible {
-            width:45%;
+            width: 45%;
             margin-left: 5%;
-            height:165px;
-            background:url('{{ images[0].rel_path }}') center center no-repeat;
+            height: 165px;
+            background: url({{ images[0].rel_path }}) center center no-repeat;
             float: left;
         }
 
@@ -74,8 +76,6 @@
             bottom: 18px;
             right: 15px;
             width: 120px;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
             box-sizing: border-box;
             text-align: center;
             border-radius: 3px;
@@ -83,16 +83,15 @@
             padding: 10px 24px;
             font-weight: bold;
             white-space: nowrap;
-
             {% if call_to_action.background_color %}
-              background: {{ call_to_action.background_color.rgb }};
+                background: {{ call_to_action.background_color.rgb }};
             {% else %}
-              background: yellow;
+                background: yellow;
             {% endif %}
             {% if call_to_action.foreground_color %}
-              color: {{ call_to_action.foreground_color.rgb }};
+                color: {{ call_to_action.foreground_color.rgb }};
             {% else %}
-              color: white;
+                color: white;
             {% endif %}
         }
 
@@ -117,20 +116,20 @@
 </head>
 
 <body>
-<div class="ad-wrapper">
-    <div class="logo"></div>
+<div class=ad-wrapper>
+    <div class=logo></div>
 
     <div class="image flexible"></div>
 
-    <div class="content-container">
-        <div class="descriptions">
+    <div class=content-container>
+        <div class=descriptions>
             <h1>{{ headline.text }}</h1>
             {% if description_1 %}
-                <p class="desc_1">{{ description_1.text }}</p>
+                <p class=desc_1>{{ description_1.text }}</p>
             {% endif %}
         </div>
 
-        <a class="action" href="{{ call_to_action.destination_url }}"><span class="innerText">{{ call_to_action.text }}</span></a>
+        <a class=action href="{{ call_to_action.destination_url }}"><span class=innerText>{{ call_to_action.text }}</span></a>
     </div>
 </div>
 
