@@ -246,7 +246,7 @@ Banner.prototype.adjustButtonWidth = function () {
 
 
 Banner.prototype.adjustTextWidth = function (element, maxWidth/* optional */, maxHeight/* optional */) {
-    if (element) {
+    if (element && window.getComputedStyle) {
         var computed = window.getComputedStyle(element),
             fontSize = parseInt(computed.fontSize);
             maxWidth = maxWidth || parseFloat(computed.width);
