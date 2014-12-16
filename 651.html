@@ -69,7 +69,7 @@
         }
 
         .ad_footer {
-            width: 100%;
+            width: 160px;
             text-align: center;
             position: absolute;
             bottom: 50px;
@@ -137,6 +137,33 @@
         }
 
         document.getElementById('ad_photo').innerHTML = html;
+ 
+        function adjustTextWidth (selector, maxWidth/* optional */, maxHeight/* optional */) {
+            var els = document.querySelectorAll(selector),
+                length = els.length;
+    
+            while (length--) {
+                var element = els[length],
+                    computed = window.getComputedStyle(element),
+                    fontSize = parseInt(computed.fontSize);
+                maxWidth = maxWidth || parseFloat(computed.width);
+                maxHeight = maxHeight || parseFloat(computed.height);
+    
+                while (element.scrollWidth > maxWidth || element.scrollHeight > maxHeight) {
+                    fontSize--;
+                    element.style.fontSize = fontSize + 'px';
+                    element.style.display = 'none';
+                    element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
+                    element.style.display = '';
+                    if (!fontSize) {        // against infinite loop
+                        break;
+                    }
+                }
+            }
+        }
+
+        adjustTextWidth('p');
+        
     </script>
 
 </body>
