@@ -134,14 +134,34 @@
 </div>
 
 <script>
-    (function(){
-        var els = document.querySelectorAll('.descriptions h1'),
+    
+    function adjustTextWidth (selector, maxWidth/* optional */, maxHeight/* optional */) {
+        var els = document.querySelectorAll(selector),
             length = els.length;
 
         while (length--) {
-            var el = els[length];
-            el.style.fontSize = (el.innerHTML.length > 25) ? '16px' : '18px';
+            var element = els[length],
+                computed = window.getComputedStyle(element),
+                fontSize = parseInt(computed.fontSize);
+            maxWidth = maxWidth || parseFloat(computed.width);
+            maxHeight = maxHeight || parseFloat(computed.height);
+
+            while (element.scrollWidth > maxWidth || element.scrollHeight > maxHeight) {
+                fontSize--;
+                element.style.fontSize = fontSize + 'px';
+                element.style.display = 'none';
+                element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
+                element.style.display = '';
+                if (!fontSize) {        // against infinite loop
+                    break;
+                }
+            }
         }
+    }
+
+    
+    (function(){
+        adjustTextWidth('.descriptions h1');
 
         var buttons = document.querySelectorAll('.innerText'),
             buttonsLength = buttons.length;

@@ -132,7 +132,7 @@
         if (slides[slides.length - 1] === undefined) {
             slides.pop();
         }
-        for (var i = 0; i < slides.length; i++) {
+        for (var i = 0; i < Math.min(slides.length, 4); i++) {
             html += '<img src="' + slides[i] + '">';
         }
 

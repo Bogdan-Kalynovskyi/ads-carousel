@@ -15,7 +15,7 @@ var utils = {
     },
 
     domReady: function (callback) {
-        // Mozilla, Opera and Webkit
+        // Mozilla, new IE and Webkit
         if (document.addEventListener) {
             document.addEventListener("DOMContentLoaded", callback, false);
         }
@@ -109,11 +109,14 @@ var utils = {
         return false;
     },
 
-    /* https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API */
+    /**
+     * Trigger when the page becomes invisible and the browser freezes timers and breaks CSS animations
+     * https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API
+     */
     pageVisibility: function (callback) {
         var hidden,
             visibilityChange;
-        if (document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support 
+        if (document.hidden !== undefined) {
             hidden = "hidden";
             visibilityChange = "visibilitychange";
         } else if (document.mozHidden !== undefined) {
@@ -211,9 +214,10 @@ Banner.prototype.initDOM = function () {
     carousel.appendChild(fragment);
 
     this.adjustButtonWidth();
+    this.adjustTextWidth(this.wrapper.querySelector('.headline'));
 
     //load jQuery to use animation as a fallback to CSS3 transitions
-    if (!this.supportsCSS3 && typeof jQuery === 'undefined') {
+    if (!this.supportsCSS3 && window.jQuery === undefined) {
         utils.loadScript('//code.jquery.com/jquery-1.11.1.min.js', function () {
             that.tryToPlay();  //start playing only when jQuery is loaded
         });
@@ -237,6 +241,27 @@ Banner.prototype.adjustButtonWidth = function () {
     
     if (height > 30) {
         button.style.fontSize = 15 + 'px';
+    }
+};
+
+
+Banner.prototype.adjustTextWidth = function (element, maxWidth/* optional */, maxHeight/* optional */) {
+    if (element) {
+        var computed = window.getComputedStyle(element),
+            fontSize = parseInt(computed.fontSize);
+            maxWidth = maxWidth || parseFloat(computed.width);
+            maxHeight = maxHeight || parseFloat(computed.height);
+
+        while (element.scrollWidth > maxWidth || element.scrollHeight > maxHeight) {
+            fontSize--;
+            element.style.fontSize = fontSize + 'px';
+            element.style.display = 'none';
+            element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
+            element.style.display = '';
+            if (!fontSize) {        // against infinite loop
+                break;
+            }
+        }
     }
 };
 
@@ -311,7 +336,7 @@ Banner.prototype.pausePlaying = function () {
 
 Banner.prototype.makeMove = function () {
     // Play only if the image (and optionally jQuery) is loaded
-    if (this.slide.image && (this.supportsCSS3 || typeof jQuery !== 'undefined')) {
+    if (this.slide.image && (this.supportsCSS3 || window.jQuery !== undefined)) {
 
         this.movesCount++;
         this.isPlaying = true;
