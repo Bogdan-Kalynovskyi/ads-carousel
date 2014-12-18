@@ -18,18 +18,9 @@
         }
 
         body {
-            line-height: 1;
-        }
-
-        ol, ul {
-            list-style: none;
-        }
-
-        body, html {
-            width: 300px;
-            height: 250px;
             margin: 0;
             padding: 0;
+            line-height: 1;
         }
 
         .ad-wrapper {
@@ -73,20 +64,21 @@
         .action {
             position: absolute;
             display: inline-block;
+            box-sizing: border-box;
             bottom: 18px;
             right: 14px;
             width: 120px;
-            box-sizing: border-box;
+            padding: 10px 24px;
             text-align: center;
             border-radius: 3px;
             text-decoration: none;
-            padding: 10px 24px;
+            text-transform: uppercase;
             font-weight: bold;
             white-space: nowrap;
             {% if call_to_action.background_color %}
                 background: {{ call_to_action.background_color.rgb }};
             {% else %}
-                background: yellow;
+                background: red;
             {% endif %}
             {% if call_to_action.foreground_color %}
                 color: {{ call_to_action.foreground_color.rgb }};
@@ -102,10 +94,6 @@
         .ad-wrapper h1 {
             font-size: 18px;
             line-height: 1.3;
-        }
-
-        p.desc_1 {
-            line-height: 18px;
         }
 
         .descriptions p {
@@ -125,7 +113,7 @@
         <div class=descriptions>
             <h1>{{ headline.text }}</h1>
             {% if description_1 %}
-                <p class=desc_1>{{ description_1.text }}</p>
+                <p>{{ description_1.text }}</p>
             {% endif %}
         </div>
 
@@ -141,24 +129,31 @@
 
         while (length--) {
             var element = els[length],
-                computed = window.getComputedStyle(element),
+                html = element.innerHTML;
+        
+            element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
+            var inner = element.children[0],
+                computed = window.getComputedStyle(inner),
                 fontSize = parseInt(computed.fontSize);
             maxWidth = maxWidth || parseFloat(computed.width);
             maxHeight = maxHeight || parseFloat(computed.height);
 
-            while (element.scrollWidth > maxWidth || element.scrollHeight > maxHeight) {
+            while (inner.scrollWidth > maxWidth || inner.scrollHeight > maxHeight) {
                 fontSize--;
                 element.style.fontSize = fontSize + 'px';
                 element.style.display = 'none';
                 element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
                 element.style.display = '';
-                if (!fontSize) {        // against infinite loop
+                if (!fontSize) {        // against infinite loop. reset to initial state
+                    element.style.fontSize = '';
                     break;
                 }
             }
+            
+            element.innerHTML = html;
         }
     }
-
+    
     
     (function(){
         adjustTextWidth('.descriptions h1');
