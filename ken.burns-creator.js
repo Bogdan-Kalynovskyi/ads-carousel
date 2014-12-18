@@ -213,8 +213,8 @@ Banner.prototype.initDOM = function () {
     }
     carousel.appendChild(fragment);
 
-    this.adjustButtonWidth();
-    this.adjustTextWidth(this.wrapper.querySelector('.headline'));
+    this.fitTextInFlexibleContainer(this.wrapper.querySelector('.action'));
+    this.fitTextInFixedContainer(this.wrapper.querySelector('.headline'));
 
     //load jQuery to use animation as a fallback to CSS3 transitions
     if (!this.supportsCSS3 && window.jQuery === undefined) {
@@ -235,33 +235,64 @@ Banner.prototype.initDOM = function () {
 };
 
 
-Banner.prototype.adjustButtonWidth = function () {
-    var button = this.wrapper.querySelector('.action'),
-        height = button.offsetHeight;
-    
-    if (height > 30) {
-        button.style.fontSize = 15 + 'px';
-    }
-};
-
-
-Banner.prototype.adjustTextWidth = function (element, maxWidth/* optional */, maxHeight/* optional */) {
+Banner.prototype.fitTextInFlexibleContainer = function (element) {
     if (element && window.getComputedStyle) {
-        var computed = window.getComputedStyle(element),
-            fontSize = parseInt(computed.fontSize);
-            maxWidth = maxWidth || parseFloat(computed.width);
-            maxHeight = maxHeight || parseFloat(computed.height);
+        var html = element.innerHTML,
+            parent = element.parentNode,
+            parentWidth = parent.clientWidth,
+            computedElement = window.getComputedStyle(element);
+        
+        parentWidth -=  Math.abs(parseFloat(computedElement.marginLeft) || 0) + 
+                        Math.abs(parseFloat(computedElement.marginRight) || 0) + 
+                        Math.abs(parseFloat(computedElement.left) || 0) + 
+                        Math.abs(parseFloat(computedElement.right) || 0);
 
-        while (element.scrollWidth > maxWidth || element.scrollHeight > maxHeight) {
+        element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
+        var inner = element.children[0],
+            computed = window.getComputedStyle(inner),
+            fontSize = parseInt(computed.fontSize);
+
+        while (inner.scrollHeight > parseFloat(window.getComputedStyle(inner).lineHeight) || element.scrollWidth > parentWidth) {
             fontSize--;
             element.style.fontSize = fontSize + 'px';
             element.style.display = 'none';
             element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
             element.style.display = '';
-            if (!fontSize) {        // against infinite loop
+            if (!fontSize) {        // against infinite loop. reset to initial state
+                element.style.fontSize = '';
                 break;
             }
         }
+
+        element.innerHTML = html;
+    }
+};
+
+
+Banner.prototype.fitTextInFixedContainer = function (element) {
+    if (element && window.getComputedStyle) {
+        var html = element.innerHTML;
+
+        element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
+        var inner = element.children[0],
+            computed = window.getComputedStyle(inner),
+            fontSize = parseInt(computed.fontSize),
+            maxWidth = parseFloat(computed.width),
+            maxHeight = parseFloat(computed.height);
+
+        while (inner.scrollWidth > maxWidth || inner.scrollHeight > maxHeight) {
+            fontSize--;
+            element.style.fontSize = fontSize + 'px';
+            element.style.display = 'none';
+            element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
+            element.style.display = '';
+            if (!fontSize) {        // against infinite loop. reset to initial state
+                element.style.fontSize = '';
+                break;
+            }
+        }
+
+        element.innerHTML = html;
     }
 };
 
