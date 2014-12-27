@@ -12,8 +12,6 @@ a img {
 .carousel,
 .action {
     position: absolute; 
-    overflow: hidden;
-    z-index: 1;
 }
 
 .carousel > img {

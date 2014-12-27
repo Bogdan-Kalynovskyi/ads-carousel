@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head lang=en>
+    <meta charset=UTF-8>
+    <title></title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <style>
+        div, span, h1, h2, h3, h4, h5, h6, p, pre,
+        a, strong, em, sub, sup, img, b, u, i,
+        form, label, input, textarea, ol, ul, li {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .container {
+            width: 728px;
+            height: 90px;
+            position: relative;
+            font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
+           {% if background_color %}
+               background: {{ background_color.rgb }};
+           {% else %}
+               background: white;
+           {% endif %}
+            {% if foreground_color %}    
+                color: {{foreground_color.rgb}};
+            {% else %}
+                color: black;
+            {% endif %}
+        }    
+        
+        .gradient {
+            height: 100%;
+            overflow: hidden; /* float - fix */
+            background: -moz-linear-gradient(top,  rgba(0,0,0,0.3) 0%, rgba(229,229,229,0.3) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.3)), color-stop(100%,rgba(229,229,229,0.3))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* IE10+ */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d000000', endColorstr='#4de5e5e5',GradientType=0 ); /* IE6-9 */
+        }
+        
+        .logo,
+        header {
+            float: left;
+        }
+        
+        .logo {
+            width: 162px;
+            height: 100%;
+            background: {{logo.background_color}} url({{ logo.rel_path }}) 50% 50% no-repeat;
+        }
+        
+        header {
+            max-width: 200px;
+            height: 72px;
+            padding: 9px 14px 9px 17px;
+            font-size: 20px;
+        }
+
+        .images > img {
+            border: #EAEAEA solid 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.75);
+            margin: 5px 22px 0 0;
+        }
+          
+        footer,
+        .images {
+            float: right;
+        }
+        
+        .action {
+            margin-top: 22px;
+            margin-right: 22px;
+            display: inline-block;
+            border-radius: 5px;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            text-transform: uppercase;
+            {% if call_to_action.background_color %}
+                background: {{ call_to_action.background_color.rgb }};
+            {% else %}
+                background: red;
+            {% endif %}
+            {% if call_to_action.foreground_color %}
+                color: {{ call_to_action.foreground_color.rgb }};
+            {% else %}
+                color: white;
+            {% endif %}
+        }
+    </style>
+</head>
+
+<body>
+    <div class=container>
+        <div class=logo></div>
+        <div class=gradient>
+            <header>
+                {% if headline %}
+                    <h1>{{ headline.text }}</h1>
+                {% endif %}
+            </header>   
+            
+            <footer>
+                <a class=action href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
+            </footer>
+                  
+            <div class=images></div>
+        </div>
+    </div>
+
+    <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
+    <script>
+        var slides = [
+                {% for im in images %}
+                    "{{ im.rel_path }}",
+                {% endfor %}
+            ];
+
+        
+            function generatePermutations (array) {
+                var permArr = [],
+                    usedChars = [];
+                function recursive (array){
+                    var ch;
+                    for (var i = 0, len = array.length; i < len; i++) {
+                        ch = array.splice(i, 1)[0];
+                        usedChars.push(ch);
+                        if (len === 1) {
+                            permArr.push(usedChars.slice());
+                        }
+                        else {
+                            recursive(array);
+                        }
+                        array.splice(i, 0, ch);
+                        usedChars.pop();
+                    }
+                    return permArr;
+                }
+                return recursive(array);
+            }
+            // todo: integrate into single method if performance needed             
+            function findMaxPermutation (array) {
+                var maximum = 0,
+                    permutationIndex = 0,
+                    imagesBelowLimit = imagesCount,
+                    permutations = generatePermutations(array);
+                
+                for (var i = 0, len = permutations.length; i < len; i++) {
+                    var height = 0,
+                        lastHeight = 0;
+                    for (var j = 0; j < imagesCount; j++) {
+                        height += permutations[i][j].width + marginTop;
+                        if (height > maxHeight) {
+                            if (lastHeight > maximum) {
+                                maximum = lastHeight;
+                                permutationIndex = i;
+                                imagesBelowLimit = j;
+                            }
+                            break;
+                        }
+                        lastHeight = height;
+                    }
+                    if (height <= maxHeight) {
+                        if (lastHeight > maximum) {
+                            maximum = lastHeight;
+                            permutationIndex = i;
+                            imagesBelowLimit = j;
+                        }
+                    }
+                }
+                
+                permutations[permutationIndex].splice(imagesBelowLimit);
+                return permutations[permutationIndex];
+            }
+            
+            function renderImages () {
+                images = findMaxPermutation(images);
+                for (var i = 0, len = images.length; i < len; i++) {
+                    imageCnt.appendChild(images[i]);
+                }
+            }
+            
+            function getHeight (selector) {
+                return document.querySelector(selector).offsetWidth;
+            }
+            
+            var loaded = 0,
+                images = [],
+                marginTop = 22, //some hardcode here, sorry
+                maxHeight = getHeight('body') - getHeight('.logo') - getHeight('header') - getHeight('.action') - 3 * marginTop,
+                imageCnt = document.querySelector('.images');
+    
+            // fix for ie8 last-comma bug
+            if (slides[slides.length - 1] === undefined) {
+                slides.pop();
+            }
+        
+            var imagesCount = slides.length;
+        
+            for (var i = 0; i < imagesCount; i++) {
+                var img = new Image();
+                img.src = slides[i];
+                img.onload = function () {
+                    images.push(this);
+                    if (++loaded === imagesCount) {
+                        renderImages();
+                    }
+                };
+            }
+        
+            Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
+            Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
+       
+    </script>
+
+</body>
+</html>

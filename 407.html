@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head lang=en>
+   <meta charset=UTF-8>
+   <title></title>
+   <meta name=viewport content="width=device-width, initial-scale=1">
+   <style>
+       div, span, h1, h2, h3, h4, h5, h6, p, pre,
+       a, strong, em, sub, sup, img, b, u, i,
+       form, label, input, textarea, ol, ul, li {
+           margin: 0;
+           padding: 0;
+           border: 0;
+           font-size: 100%;
+           font: inherit;
+           vertical-align: baseline;
+       }
+
+       body {
+           margin: 0;
+           padding: 0;
+           line-height: 1;
+       }
+
+       .container {
+           width: 300px;
+           height: 250px;
+           position: relative;
+           font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
+           {% if background_color %}
+               background: {{ background_color.rgb }};
+           {% else %}
+               background: white;
+           {% endif %}
+           {% if foreground_color %}
+               color: {{ foreground_color.rgb }};
+           {% else %}
+               color: black;
+           {% endif %}
+       }
+       
+       .gradient {
+           display: table;
+           padding: 10px;
+           height: 156px;
+           background: -moz-linear-gradient(top,  rgba(0,0,0,0.3) 0%, rgba(229,229,229,0.3) 100%); /* FF3.6+ */
+           background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.3)), color-stop(100%,rgba(229,229,229,0.3))); /* Chrome,Safari4+ */
+           background: -webkit-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Chrome10+,Safari5.1+ */
+           background: -o-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Opera 11.10+ */
+           background: -ms-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* IE10+ */
+           background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* W3C */
+           filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d000000', endColorstr='#4de5e5e5',GradientType=0 ); /* IE6-9 */
+       }
+
+       .images,
+       header {
+           display: table-cell;
+           vertical-align: middle;
+           text-align: center;
+           width: 140px;
+       }
+      
+       .images > img {
+           border: #EAEAEA solid 4px;
+           box-shadow: 0 0 5px rgba(0, 0, 0, 0.75);
+       }
+       
+       header {
+           font-size: 24px;
+       }
+
+       header h1 {
+           height: 156px;
+       }
+       
+       footer {
+           height: 64px;
+           position: relative;
+           padding: 5px;
+           background: {{ logo.background_color }};
+       }
+       
+       .logo {
+           width: 150px;
+           height: 100%;
+           float: left;
+           background: url({{ logo.rel_path }}) 50% 50% no-repeat;
+       }
+       
+       .action {
+           width: 120px;
+           box-sizing: border-box;
+           position: absolute;
+           left: 73.5%;
+           top: 50%;
+           -webkit-transform: translateX(-50%) translateY(-50%);
+           -moz-transform: translateX(-50%) translateY(-50%);
+           -ms-transform: translateX(-50%) translateY(-50%);
+           transform: translateX(-50%) translateY(-50%);
+           
+           display: inline-block;
+           border-radius: 5px;
+           padding: 15px 7px;
+           font-weight: bold;
+           font-size: 14px;
+           text-align: center;
+           text-decoration: none;
+           text-transform: uppercase;
+           {% if call_to_action.background_color %}
+               background: {{ call_to_action.background_color.rgb }};
+           {% else %}
+               background: red;
+           {% endif %}
+           {% if call_to_action.foreground_color %}
+               color: {{ call_to_action.foreground_color.rgb }};
+           {% else %}
+               color: white;
+           {% endif %}
+       }
+   </style>
+</head>
+
+<body>
+   <div class=container>
+       <div class=gradient>
+   
+           <div class=images>
+               <img src='{{ images[0].rel_path }}'>      
+           </div>
+           <header>
+               {% if headline %}
+                   <h1>{{ headline.text }}</h1>
+               {% endif %}
+           </header>
+       </div>
+   
+       <footer>
+           <div class=logo></div>
+           <a class=action href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>
+       </footer>
+   </div>
+
+   <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
+   <script>            
+
+           Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
+           Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));
+
+   </script>
+
+</body>
+</html> 

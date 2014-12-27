@@ -1,0 +1,189 @@
+       <html>
+<head>
+<meta charset="UTF-8">
+<title>728x90</title>
+<style type="text/css">
+body, html { width: 300px; height: 250px; margin:0; padding:0;}
+
+    div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed,
+    figure, figcaption, footer, header, hgroup,
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          font-size: 100%;
+          font: inherit;
+          vertical-align: baseline;
+          }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure,
+    footer, header, hgroup, menu, nav, section {
+          display: block;
+    }
+    body {
+          line-height: 1;
+    }
+    ol, ul {
+          list-style: none;
+    }
+    blockquote, q {
+          quotes: none;
+    }
+    blockquote:before, blockquote:after,
+    q:before, q:after {
+          content: '';
+          content: none;
+    }
+    table {
+          border-collapse: collapse;
+          border-spacing: 0;
+    }
+
+    /* END CSS CLEARS */
+.container_728x90 {
+	height: 90px;
+	width: 728px;
+	{% if background_color %}    
+      background-color:{{background_color.rgb}};
+    {% else %}
+      background-color:white;
+    {% endif %}
+}
+.ad_body {
+	height: 90px;
+	width: 728px;
+	background: -moz-linear-gradient(top,  rgba(0,0,0,0.3) 0%, rgba(229,229,229,0.3) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.3)), color-stop(100%,rgba(229,229,229,0.3))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d000000', endColorstr='#4de5e5e5',GradientType=0 ); /* IE6-9 */
+	float: left;
+}
+.ad_logo {
+	width: 162px;
+	height: 90px;
+	float: left;
+	text-align: center;
+}
+.ad_logo img {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.ad_header {
+	width: 280px;
+	text-align: left;
+	float: left;
+}
+.ad_header p {
+	float: left;
+	margin: 9px;
+	padding-top: 0px;
+	padding-right: 4px;
+	padding-left: 4px;
+	padding-bottom: 0px;
+	font-size: 20px;
+	font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
+	{% if foreground_color %}    
+      color:{{foreground_color.rgb}};
+    {% else %}
+      color:black;
+    {% endif %}
+}
+
+.ad_photo {
+	height: auto;
+	width: 130px;
+	text-align: center;
+	float: left;
+	margin-top: 5px;
+	margin-right: 0px;
+	margin-left: 10px;
+}
+.ad_photo img{
+	border:#EAEAEA solid 4px;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+}
+.ad_footer {
+	width: 126px;
+	height: 90px;
+	text-align: center;
+	float: left;
+	position: absolute;
+	left: 600px;
+}
+.ad_cta {
+	background-color: #cccccc;
+	border-radius: 5px;
+	padding: 15px;
+	text-align: center;
+	font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	font-size: 14px;
+	margin: 10px 5px;
+	position: relative;
+	top: 40%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+	{% if call_to_action.background_color %}    
+      background:{{call_to_action.background_color.rgb}};
+    {% else %}
+      background:red;
+    {% endif %}
+      font-weight: bold;
+      display: inline-block;
+}
+.ad_cta a {
+    text-decoration: none;
+    text-transform: uppercase;
+    {% if call_to_action.foreground_color %}    
+      color:{{call_to_action.foreground_color.rgb}};
+    {% else %}
+      color:white;
+    {% endif %}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container_728x90">
+	<div class="ad_body">
+		<div class="ad_logo" style="
+    background-size:auto auto;
+    background-color: {{logo.background_color}};"><img src='{{logo.rel_path}}'/></div>
+    	<div class="ad_header"><p>{% if headline %}
+    {{ headline.text }}
+    {% endif %}
+    {% if description_1 %}
+    <p class="desc one">{{ description_1.text }}</p>
+    {% endif %}</p></div>
+    	<div class="ad_photo"><img src='{{ images[0].rel_path }}'/></div>
+    	<div class="ad_footer">
+    	<div class="ad_cta"><a class="button cta text-center" href="{{call_to_action.href}}">
+        {{call_to_action.text}}
+      </a></div>
+    </div>
+    </div>
+    
+</div>
+</body>
+</html>
+       

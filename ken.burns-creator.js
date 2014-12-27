@@ -214,7 +214,7 @@ Banner.prototype.initDOM = function () {
     carousel.appendChild(fragment);
 
     this.fitTextInFlexibleContainer(this.wrapper.querySelector('.action'));
-    this.fitTextInFixedContainer(this.wrapper.querySelector('.headline'));
+    this.fitTextInFixedContainer(this.wrapper.querySelector('h1'));
 
     //load jQuery to use animation as a fallback to CSS3 transitions
     if (!this.supportsCSS3 && window.jQuery === undefined) {
@@ -244,15 +244,15 @@ Banner.prototype.fitTextInFlexibleContainer = function (element) {
         
         parentWidth -=  Math.abs(parseFloat(computedElement.marginLeft) || 0) + 
                         Math.abs(parseFloat(computedElement.marginRight) || 0) + 
-                        Math.abs(parseFloat(computedElement.left) || 0) + 
-                        Math.abs(parseFloat(computedElement.right) || 0);
+                        Math.abs(parseFloat(computedElement.left) || 0) / 2 + 
+                        Math.abs(parseFloat(computedElement.right) || 0) / 2;
 
         element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
         var inner = element.children[0],
             computed = window.getComputedStyle(inner),
             fontSize = parseInt(computed.fontSize);
 
-        while (inner.scrollHeight > parseFloat(window.getComputedStyle(inner).lineHeight) || element.scrollWidth > parentWidth) {
+        while (inner.scrollHeight - 1 > parseFloat(window.getComputedStyle(inner).lineHeight) || element.scrollWidth - 1 > parentWidth) {
             fontSize--;
             element.style.fontSize = fontSize + 'px';
             element.style.display = 'none';
@@ -271,16 +271,16 @@ Banner.prototype.fitTextInFlexibleContainer = function (element) {
 
 Banner.prototype.fitTextInFixedContainer = function (element) {
     if (element && window.getComputedStyle) {
-        var html = element.innerHTML;
-
-        element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
-        var inner = element.children[0],
-            computed = window.getComputedStyle(inner),
+        var html = element.innerHTML,
+            computed = window.getComputedStyle(element),
             fontSize = parseInt(computed.fontSize),
             maxWidth = parseFloat(computed.width),
             maxHeight = parseFloat(computed.height);
 
-        while (inner.scrollWidth > maxWidth || inner.scrollHeight > maxHeight) {
+        element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
+        var inner = element.children[0];
+
+        while (inner.scrollWidth - 1 > maxWidth || inner.scrollHeight - 1 > maxHeight) {
             fontSize--;
             element.style.fontSize = fontSize + 'px';
             element.style.display = 'none';

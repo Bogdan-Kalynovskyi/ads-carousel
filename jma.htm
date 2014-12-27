@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head lang=en>
-    <meta charset="UTF-8">
+    <meta charset=UTF-8>
     <title>JMB</title>
     <meta name=viewport content="width=device-width, initial-scale=1">
-
     <style>
         div, span, h1, h2, h3, h4, h5, h6, p, pre,
         a, strong, em, sub, sup, img, b, u, i,
@@ -23,13 +22,13 @@
             line-height: 1;
         }
 
-        .ad-wrapper {
+        .container {
             width: 300px;
             height: 250px;
-            position: relative;
-            overflow: hidden;
             box-sizing: border-box;
-            border:1px solid #ccc;
+            border: 1px solid #ccc;
+            padding: 0 14px;
+            position: relative;
             font-family: Helvetica, Arial, sans-serif;
             {% if background_color %}
                 background: {{ background_color.rgb }};
@@ -43,38 +42,59 @@
             {% endif %}
         }
 
-        .content-container {
-            margin-left: 50%;
-        }
-
         .logo {
-            width:100%;
-            height:65px;
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+            height: 65px;
             background: {{ logo.background_color }} url({{ logo.rel_path }}) center center no-repeat;
         }
 
-        .image.flexible {
-            width: 45%;
-            margin-left: 5%;
-            height: 165px;
-            background: url({{ images[0].rel_path }}) center center no-repeat;
+        .images,
+        header {
+            margin-top: 65px;
+            width: 50%;
             float: left;
         }
 
-        .action {
-            position: absolute;
-            display: inline-block;
-            box-sizing: border-box;
-            bottom: 18px;
-            right: 14px;
-            width: 120px;
-            padding: 10px 24px;
+        .images {
+            height: 160px;
+            background: url({{ images[0].rel_path }}) 50% 50% no-repeat;
+        }
+        
+        header {
+            padding-top: 12px;
+            font-size: 18px;
+            max-height: 115px;
+        }
+
+        header h1,
+        header p {
             text-align: center;
+            line-height: 1.3;
+        }
+
+        header p {
+            margin-top: 12px;
+            font-size: .72222em;
+        }
+        
+        footer {
+            width: 50%;
+            float: right;
+            margin-top: 9px;
+            text-align: center;
+        }
+
+        .action {         
+            display: inline-block;
+            padding: 10px 15px;
             border-radius: 3px;
+            font-size: 16px;
+            font-weight: bold;
             text-decoration: none;
             text-transform: uppercase;
-            font-weight: bold;
-            white-space: nowrap;
             {% if call_to_action.background_color %}
                 background: {{ call_to_action.background_color.rgb }};
             {% else %}
@@ -86,90 +106,35 @@
                 color: white;
             {% endif %}
         }
-
-        .descriptions {
-            padding: 0 12px;
-        }
-
-        .ad-wrapper h1 {
-            font-size: 18px;
-            line-height: 1.3;
-        }
-
-        .descriptions p {
-            font-size: 13px;
-            line-height: 16px;
-        }
     </style>
 </head>
 
 <body>
-<div class=ad-wrapper>
-    <div class=logo></div>
-
-    <div class="image flexible"></div>
-
-    <div class=content-container>
-        <div class=descriptions>
+    <div class=container>
+        <div class=logo></div>
+    
+        <div class=images></div>
+    
+        <header>
             <h1>{{ headline.text }}</h1>
             {% if description_1 %}
                 <p>{{ description_1.text }}</p>
             {% endif %}
-        </div>
-
-        <a class=action href="{{ call_to_action.destination_url }}"><span class=innerText>{{ call_to_action.text }}</span></a>
+        </header>
+         
+        <footer>
+            <a class=action href="{{ call_to_action.destination_url }}" target=_blank>{{ call_to_action.text }}</a>       
+        </footer>
     </div>
-</div>
-
-<script>
     
-    function adjustTextWidth (selector, maxWidth/* optional */, maxHeight/* optional */) {
-        var els = document.querySelectorAll(selector),
-            length = els.length;
-
-        while (length--) {
-            var element = els[length],
-                html = element.innerHTML;
+    <script src="{{ asset_base_url }}javascripts/ken.burns-creator.js"></script>
+    <script>
+    
+        utils.domReady(function() {
+            Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
+            Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
+        });
         
-            element.innerHTML = '<div style="padding:0!important; border:0!important; margin:0!important;">' + html + '</div>';
-            var inner = element.children[0],
-                computed = window.getComputedStyle(inner),
-                fontSize = parseInt(computed.fontSize);
-            maxWidth = maxWidth || parseFloat(computed.width);
-            maxHeight = maxHeight || parseFloat(computed.height);
-
-            while (inner.scrollWidth > maxWidth || inner.scrollHeight > maxHeight) {
-                fontSize--;
-                element.style.fontSize = fontSize + 'px';
-                element.style.display = 'none';
-                element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
-                element.style.display = '';
-                if (!fontSize) {        // against infinite loop. reset to initial state
-                    element.style.fontSize = '';
-                    break;
-                }
-            }
-            
-            element.innerHTML = html;
-        }
-    }
-    
-    
-    (function(){
-        adjustTextWidth('.descriptions h1');
-
-        var buttons = document.querySelectorAll('.innerText'),
-            buttonsLength = buttons.length;
-        while (buttonsLength--) {
-            var button = buttons[buttonsLength];
-            var width = button.offsetWidth;
-
-            if (width > 96) {
-                button.style.fontSize = '13px';
-                button.parentNode.style.padding = '10px';
-            }
-        }
-    })();
-</script>
+    </script>
 </body>
 </html>
