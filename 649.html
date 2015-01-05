@@ -5,9 +5,8 @@
     <title></title>
     <meta name=viewport content="width=device-width, initial-scale=1">
     <style>
-        div, span, h1, h2, h3, h4, h5, h6, p, pre,
-        a, strong, em, sub, sup, img, b, u, i,
-        form, label, input, textarea, ol, ul, li {
+        div, span, h1, h2, p, pre, header, footer,
+        a, img, b, u, i, ul, li, section, article {
             margin: 0;
             padding: 0;
             border: 0;
@@ -27,21 +26,30 @@
             height: 90px;
             position: relative;
             font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
-           {% if background_color %}
-               background: {{ background_color.rgb }};
-           {% else %}
-               background: white;
-           {% endif %}
             {% if foreground_color %}    
                 color: {{foreground_color.rgb}};
             {% else %}
                 color: black;
             {% endif %}
         }    
+
+        .logo {
+            width: 162px;
+            height: 100%;
+            float: left;
+            background: {{logo.background_color}} url({{ logo.rel_path }}) 50% 50% no-repeat;
+        }
         
         .gradient {
+            width: 566px; /*calc(100% - 162px);*/
             height: 100%;
             overflow: hidden; /* float - fix */
+
+            {% if background_color %}
+                background: {{ background_color.rgb }};
+            {% else %}
+                background: white;
+            {% endif %}
             background: -moz-linear-gradient(top,  rgba(0,0,0,0.3) 0%, rgba(229,229,229,0.3) 100%); /* FF3.6+ */
             background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.3)), color-stop(100%,rgba(229,229,229,0.3))); /* Chrome,Safari4+ */
             background: -webkit-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Chrome10+,Safari5.1+ */
@@ -51,22 +59,15 @@
             filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d000000', endColorstr='#4de5e5e5',GradientType=0 ); /* IE6-9 */
         }
         
-        .logo,
         header {
-            float: left;
-        }
-        
-        .logo {
-            width: 162px;
+            max-width: 230px;
             height: 100%;
-            background: {{logo.background_color}} url({{ logo.rel_path }}) 50% 50% no-repeat;
+            float: left;
+            font-size: 20px;
         }
         
-        header {
-            max-width: 200px;
-            height: 72px;
-            padding: 9px 14px 9px 17px;
-            font-size: 20px;
+        header h1 {
+            padding: 8px 15px;
         }
 
         .images > img {
@@ -81,8 +82,9 @@
         }
         
         .action {
-            margin-top: 22px;
+            margin-top: 23px;
             margin-right: 22px;
+            
             display: inline-block;
             border-radius: 5px;
             padding: 15px;
@@ -130,67 +132,63 @@
                 {% endfor %}
             ];
 
-        
-            function generatePermutations (array) {
-                var permArr = [],
-                    usedChars = [];
-                function recursive (array){
-                    var ch;
-                    for (var i = 0, len = array.length; i < len; i++) {
-                        ch = array.splice(i, 1)[0];
-                        usedChars.push(ch);
-                        if (len === 1) {
-                            permArr.push(usedChars.slice());
-                        }
-                        else {
-                            recursive(array);
-                        }
-                        array.splice(i, 0, ch);
-                        usedChars.pop();
-                    }
-                    return permArr;
-                }
-                return recursive(array);
+            // fix for ie8 last-comma bug
+            if (slides[slides.length - 1] === undefined) {
+                slides.pop();
             }
-            // todo: integrate into single method if performance needed             
+
+        
             function findMaxPermutation (array) {
                 var maximum = 0,
                     permutationIndex = 0,
-                    imagesBelowLimit = imagesCount,
-                    permutations = generatePermutations(array);
+                    imagesBelowLimit = 0,
+                    permutations = utils.getPermutations(array);
                 
                 for (var i = 0, len = permutations.length; i < len; i++) {
                     var height = 0,
                         lastHeight = 0;
                     for (var j = 0; j < imagesCount; j++) {
-                        height += permutations[i][j].width + marginTop;
+                        height += permutations[i][j]._size;
                         if (height > maxHeight) {
-                            if (lastHeight > maximum) {
-                                maximum = lastHeight;
-                                permutationIndex = i;
-                                imagesBelowLimit = j;
-                            }
                             break;
                         }
                         lastHeight = height;
                     }
-                    if (height <= maxHeight) {
-                        if (lastHeight > maximum) {
-                            maximum = lastHeight;
-                            permutationIndex = i;
-                            imagesBelowLimit = j;
-                        }
+                    if (lastHeight > maximum) {
+                        maximum = lastHeight;
+                        permutationIndex = i;
+                        imagesBelowLimit = j;
                     }
                 }
                 
                 permutations[permutationIndex].splice(imagesBelowLimit);
                 return permutations[permutationIndex];
             }
+        
+            function getImagesSizes() {
+                var margin,
+                    borderPadding;
+                
+                imageContainer.style.visibility = 'hidden';
+                imageContainer.appendChild(images[0]);
+                var computed = getComputedStyle(images[0]);
+                margin = parseFloat(computed.marginLeft) + parseFloat(computed.marginRight);
+                borderPadding = parseFloat(computed.borderLeftWidth) + 
+                    parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight) + parseFloat(computed.borderRightWidth);
+                imageContainer.removeChild(images[0]);
+                
+                for (var i = 0; i < imagesCount; i++) {
+                    images[i]._size = images[i].width + borderPadding + margin;
+                }
+                
+                imageContainer.style.visibility = '';
+                maxHeight -= margin;
+            }
             
             function renderImages () {
                 images = findMaxPermutation(images);
                 for (var i = 0, len = images.length; i < len; i++) {
-                    imageCnt.appendChild(images[i]);
+                    imageContainer.appendChild(images[i]);
                 }
             }
             
@@ -198,18 +196,15 @@
                 return document.querySelector(selector).offsetWidth;
             }
             
+            Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
+            Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
+       
+        /////////////////////////////////
             var loaded = 0,
                 images = [],
-                marginTop = 22, //some hardcode here, sorry
-                maxHeight = getHeight('body') - getHeight('.logo') - getHeight('header') - getHeight('.action') - 3 * marginTop,
-                imageCnt = document.querySelector('.images');
-    
-            // fix for ie8 last-comma bug
-            if (slides[slides.length - 1] === undefined) {
-                slides.pop();
-            }
-        
-            var imagesCount = slides.length;
+                imagesCount = slides.length,
+                maxHeight = getHeight('body') - getHeight('.logo') - getHeight('header') - getHeight('footer'),
+                imageContainer = document.querySelector('.images');
         
             for (var i = 0; i < imagesCount; i++) {
                 var img = new Image();
@@ -217,15 +212,12 @@
                 img.onload = function () {
                     images.push(this);
                     if (++loaded === imagesCount) {
+                        getImagesSizes();
                         renderImages();
                     }
                 };
             }
         
-            Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
-            Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
-       
     </script>
-
 </body>
 </html>

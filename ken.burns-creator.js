@@ -2,6 +2,29 @@
  * Here we have all we need from jQuery. And even more: modernizr,
  */
 var utils = {
+   
+    getPermutations: function (array) {
+        var permArr = [],
+            usedChars = [];
+        function recursive (array){
+            var ch;
+            for (var i = 0, len = array.length; i < len; i++) {
+                ch = array.splice(i, 1)[0];
+                usedChars.push(ch);
+                if (len === 1) {
+                    permArr.push(usedChars.slice());
+                }
+                else {
+                    recursive(array);
+                }
+                array.splice(i, 0, ch);
+                usedChars.pop();
+            }
+            return permArr;
+        }
+        return recursive(array);
+    },
+
     extend: function (destination) {
         for (var i = 1, len = arguments.length; i < len; i++) {
             var source = arguments[i];

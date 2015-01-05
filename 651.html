@@ -5,9 +5,8 @@
    <title></title>
    <meta name=viewport content="width=device-width, initial-scale=1">
    <style>
-       div, span, h1, h2, h3, h4, h5, h6, p, pre,
-       a, strong, em, sub, sup, img, b, u, i,
-       form, label, input, textarea, ol, ul, li {
+        div, span, h1, h2, p, pre, header, footer,
+        a, img, b, u, i, ul, li, section, article {
            margin: 0;
            padding: 0;
            border: 0;
@@ -144,56 +143,32 @@
                {% endfor %}
            ];
        
+            // fix for ie8 last-comma bug
+            if (slides[slides.length - 1] === undefined) {
+                slides.pop();
+            }
        
-           function generatePermutations (array) {
-               var permArr = [],
-                   usedChars = [];
-               function recursive (array){
-                   var ch;
-                   for (var i = 0, len = array.length; i < len; i++) {
-                       ch = array.splice(i, 1)[0];
-                       usedChars.push(ch);
-                       if (len === 1) {
-                           permArr.push(usedChars.slice());
-                       }
-                       else {
-                           recursive(array);
-                       }
-                       array.splice(i, 0, ch);
-                       usedChars.pop();
-                   }
-                   return permArr;
-               }
-               return recursive(array);
-           }
-           // todo: integrate into single method if performance needed             
+        
            function findMaxPermutation (array) {
                var maximum = 0,
                    permutationIndex = 0,
-                   imagesBelowLimit = imagesCount,
-                   permutations = generatePermutations(array);
+                   imagesBelowLimit = 0, 
+                   permutations = utils.getPermutations(array);
                
                for (var i = 0, len = permutations.length; i < len; i++) {
                    var height = 0,
                        lastHeight = 0;
                    for (var j = 0; j < imagesCount; j++) {
-                       height += permutations[i][j].height + marginTop;
+                       height += permutations[i][j]._size;
                        if (height > maxHeight) {
-                           if (lastHeight > maximum) {
-                               maximum = lastHeight;
-                               permutationIndex = i;
-                               imagesBelowLimit = j;
-                           }
                            break;
                        }
                        lastHeight = height;
                    }
-                   if (height <= maxHeight) {
-                       if (lastHeight > maximum) {
-                           maximum = lastHeight;
-                           permutationIndex = i;
-                           imagesBelowLimit = j;
-                       }
+                   if (lastHeight > maximum) {
+                       maximum = lastHeight;
+                       permutationIndex = i;
+                       imagesBelowLimit = j;
                    }
                }
                
@@ -201,10 +176,30 @@
                return permutations[permutationIndex];
            }
            
+            function getImagesSizes() {
+                var margin,
+                    borderPadding;
+                
+                imageContainer.style.visibility = 'hidden';
+                imageContainer.appendChild(images[0]);
+                var computed = getComputedStyle(images[0]);
+                margin = parseFloat(computed.marginTop) + parseFloat(computed.marginBottom);
+                borderPadding = parseFloat(computed.borderTopWidth) + 
+                    parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom) + 
+                    parseFloat(computed.borderBottomWidth);
+                imageContainer.removeChild(images[0]);
+                
+                for (var i = 0; i < imagesCount; i++) {
+                    images[i]._size = images[i].height + borderPadding + margin;
+                }
+                
+                imageContainer.style.visibility = '';
+            }
+            
            function renderImages () {
                images = findMaxPermutation(images);
                for (var i = 0, len = images.length; i < len; i++) {
-                   imageCnt.appendChild(images[i]);
+                    imageContainer.appendChild(images[i]);
                }
            }
 
@@ -212,34 +207,28 @@
                return document.querySelector(selector).offsetHeight;
            }
            
+            Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
+            Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
+       
+        /////////////////////////////////
            var loaded = 0,
-               images = [],
-               marginTop = 16, //some hardcode here, sorry
-               maxHeight = getHeight('body') - getHeight('.logo') - getHeight('header') - getHeight('.action') - 3 * marginTop,
-               imageCnt = document.querySelector('.images');
+               images = [], 
+               imagesCount = slides.length,
+               maxHeight = getHeight('body') - getHeight('.logo') - getHeight('header') - getHeight('footer'),
+               imageContainer = document.querySelector('.images');
    
-           // fix for ie8 last-comma bug
-           if (slides[slides.length - 1] === undefined) {
-               slides.pop();
-           }
-       
-           var imagesCount = slides.length;
-       
            for (var i = 0; i < imagesCount; i++) {
                var img = new Image();
                img.src = slides[i];
                img.onload = function () {
                    images.push(this);
                    if (++loaded === imagesCount) {
+                        getImagesSizes();
                        renderImages();
                    }
                };
            }
        
-           Banner.prototype.fitTextInFixedContainer(document.querySelector('header'));
-           Banner.prototype.fitTextInFlexibleContainer(document.querySelector('.action'));    
-      
    </script>
-
 </body>
 </html> 
