@@ -26,6 +26,11 @@
            height: 600px;
            position: relative;
            font-family: "Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVu Sans Condensed", Helvetica, Arial, sans-serif;
+           {% if background_color %}
+               background: {{ background_color.rgb }};
+           {% else %}
+               background: white;
+           {% endif %}
            {% if foreground_color %}
                color: {{ foreground_color.rgb }};
            {% else %}
@@ -43,12 +48,6 @@
            top: 100px;
            bottom: 0;
            width: 100%;
-               
-           {% if background_color %}
-               background: {{ background_color.rgb }};
-           {% else %}
-               background: white;
-           {% endif %}
            background: -moz-linear-gradient(top,  rgba(0,0,0,0.3) 0%, rgba(229,229,229,0.3) 100%); /* FF3.6+ */
            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.3)), color-stop(100%,rgba(229,229,229,0.3))); /* Chrome,Safari4+ */
            background: -webkit-linear-gradient(top, rgba(0,0,0,0.3) 0%,rgba(229,229,229,0.3) 100%); /* Chrome10+,Safari5.1+ */
@@ -95,7 +94,7 @@
            
            display: inline-block;
            border-radius: 5px;
-           padding: 15px 18px;
+           padding: 15px 17px;
            font-weight: bold;
            font-size: 14px;
            text-decoration: none;
