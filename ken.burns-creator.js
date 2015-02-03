@@ -139,6 +139,7 @@ var utils = {
     pageVisibility: function (callback) {
         var hidden,
             visibilityChange;
+       
         if (document.hidden !== undefined) {
             hidden = "hidden";
             visibilityChange = "visibilitychange";
@@ -258,6 +259,13 @@ Banner.prototype.initDOM = function () {
 };
 
 
+Banner.forseElementRepaint = function (element) {
+    element.style.display = 'none';
+    element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
+    element.style.display = '';
+};
+
+
 Banner.prototype.fitTextInFlexibleContainer = function (element) {
     if (element && window.getComputedStyle) {
         var html = element.innerHTML,
@@ -278,9 +286,7 @@ Banner.prototype.fitTextInFlexibleContainer = function (element) {
         while (inner.scrollHeight - 1 > parseFloat(window.getComputedStyle(inner).lineHeight) || element.scrollWidth - 1 > parentWidth) {
             fontSize--;
             element.style.fontSize = fontSize + 'px';
-            element.style.display = 'none';
-            element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
-            element.style.display = '';
+            this.forseElementRepaint(element);
             if (!fontSize) {        // against infinite loop. reset to initial state
                 element.style.fontSize = '';
                 break;
@@ -306,9 +312,7 @@ Banner.prototype.fitTextInFixedContainer = function (element) {
         while (inner.scrollWidth - 1 > maxWidth || inner.scrollHeight - 1 > maxHeight) {
             fontSize--;
             element.style.fontSize = fontSize + 'px';
-            element.style.display = 'none';
-            element.offsetHeight;   // this is an important part of the magic that forses DOM repaint
-            element.style.display = '';
+            this.forseElementRepaint(element);
             if (!fontSize) {        // against infinite loop. reset to initial state
                 element.style.fontSize = '';
                 break;
